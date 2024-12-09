@@ -115,36 +115,6 @@
       animation: brighten linear both;
       animation-range: cover calc(50% - 1lh) calc(50% + 1lh);
       animation-timeline: view();
-
-      &:first-of-type {
-        opacity: 1;
-        animation-name: dim;
-      }
-
-      &:last-of-type {
-        opacity: 0.2;
-        animation-name: bright;
-      }
-    }
-
-    @keyframes dim {
-      from,
-      50% {
-        opacity: 1;
-      }
-      to {
-        opacity: 0.2;
-      }
-    }
-
-    @keyframes bright {
-      from {
-        opacity: 0.2;
-      }
-      50%,
-      to {
-        opacity: 1;
-      }
     }
 
     @keyframes brighten {
@@ -154,7 +124,18 @@
       }
       50% {
         opacity: 1;
-        filter: brightness(1.2);
+      }
+    }
+  }
+
+  /* Fallback for browsers that don't support scroll-driven animations */
+  @supports not (animation-timeline: scroll()) {
+    li {
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+
+      &:hover {
+        opacity: 1;
       }
     }
   }
