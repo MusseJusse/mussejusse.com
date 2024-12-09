@@ -17,22 +17,26 @@
     --font-width-max: 1500;
     --start: 0;
     --end: 360;
-    --lightness: 65%;
+    --lightness: 55%;
     --grid-size: 45px;
     --grid-color: color-mix(in hsl, canvasText, transparent 70%);
+    --base-chroma: 0.3;
   }
 
   [data-theme="dark"] {
-    --lightness: 75%;
+    --lightness: 65%;
+    --base-chroma: 0.2;
   }
 
   [data-theme="light"] {
-    --lightness: 65%;
+    --lightness: 55%;
+    --base-chroma: 0.3;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --lightness: 75%;
+      --lightness: 65%;
+      --base-chroma: 0.2;
     }
   }
 
@@ -90,6 +94,10 @@
 }
 
 @layer effect {
+  :root {
+    --base-chroma: 0.2;
+  }
+
   ul {
     --step: calc((var(--end) - var(--start)) / (var(--count) - 1));
   }
@@ -190,9 +198,11 @@
   h2,
   li:last-of-type {
     background: linear-gradient(
+      to bottom,
       canvasText 50%,
-      color-mix(in oklch, canvas, canvasText 25%)
+      color-mix(in oklch, canvas, canvasText 15%)
     );
+    -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
@@ -221,6 +231,10 @@
   footer {
     padding-block: 2rem;
     opacity: 0.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
 
   h1 {
@@ -230,9 +244,11 @@
     line-height: 0.8;
     margin: 0;
     background: linear-gradient(
-      canvasText 60%,
-      color-mix(in oklch, canvas, canvasText)
+      to bottom,
+      canvasText 70%,
+      color-mix(in oklch, canvas, canvasText 10%)
     );
+    -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
