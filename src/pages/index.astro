@@ -42,17 +42,32 @@ import Layout from "../layouts/main.astro";
           </div>
         </div>
         
-        <!-- Project box -->
-        <div class="bg-white text-black p-6 md:p-8 max-w-sm w-full">
-          <div class="flex justify-between items-start mb-4">
-            <span class="text-xs tracking-widest text-gray-500">FEATURED PROJECT</span>
-            <span class="text-yellow-400 text-2xl">→</span>
+        <!-- Project boxes -->
+        <div class="flex w-full max-w-sm flex-col gap-4">
+          <div class="bg-white text-black p-6 md:p-8 w-full">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs tracking-widest text-gray-500">FEATURED PROJECT</span>
+              <span class="text-yellow-400 text-2xl">-&gt;</span>
+            </div>
+            <a href="https://roundest.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
+              ROUNDEST<br/>POKEMON
+            </a>
+            <div class="mt-4 text-xs text-gray-600 leading-relaxed">
+              Next.JS 16 // Cache Components // Server Actions // KV Store
+            </div>
           </div>
-          <a href="https://roundest.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
-            ROUNDEST<br/>POKEMON
-          </a>
-          <div class="mt-4 text-xs text-gray-600 leading-relaxed">
-            Next.JS 16 // Cache Components // Server Actions // KV Store
+
+          <div class="bg-white text-black p-6 md:p-8 w-full">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs tracking-widest text-gray-500">PROJECT</span>
+              <span class="text-yellow-400 text-2xl">-&gt;</span>
+            </div>
+            <a href="https://models.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
+              MODELS.MUSSEJUSSE
+            </a>
+            <div class="mt-4 text-xs text-gray-600 leading-relaxed">
+              Astro // Ultra Performant // models.dev implementation
+            </div>
           </div>
         </div>
       </div>
