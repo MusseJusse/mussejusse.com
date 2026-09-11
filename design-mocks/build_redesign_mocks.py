@@ -1,0 +1,689 @@
+"""Build one self-contained HTML file with five redesign directions for mussejusse.com.
+
+Each direction is rendered live in a desktop (1440x1000) and mobile (390x844) stage
+using container query units, so the mockups are real HTML/CSS rather than images.
+Fonts are embedded as woff2 so the published document needs no network.
+"""
+
+from pathlib import Path
+import base64
+
+ROOT = Path(__file__).resolve().parent
+FONTS = ROOT / "redesign-assets" / "fonts"
+
+
+def font(name, path, weight="400", style="normal"):
+    data = base64.b64encode((FONTS / path).read_bytes()).decode()
+    return (
+        "@font-face{font-family:'%s';font-style:%s;font-weight:%s;font-display:swap;"
+        "src:url(data:font/woff2;base64,%s) format('woff2')}" % (name, style, weight, data)
+    )
+
+
+FONT_CSS = "".join(
+    [
+        font("Space Grotesk", "SpaceGrotesk.woff2", "300 700"),
+        font("Space Mono", "SpaceMono-Regular.woff2", "400"),
+        font("Space Mono", "SpaceMono-Bold.woff2", "700"),
+        font("DM Serif Display", "DMSerif-Regular.woff2", "400"),
+        font("DM Serif Display", "DMSerif-Italic.woff2", "400", "italic"),
+        font("Anton", "Anton.woff2", "400"),
+    ]
+)
+
+GH = "https://github.com/MusseJusse"
+BS = "https://bsky.app/profile/mussejusse.com"
+R = "https://roundest.mussejusse.com"
+M = "https://models.mussejusse.com"
+
+
+def a(url, inner, cls=""):
+    c = ' class="%s"' % cls if cls else ""
+    return '<a%s href="%s" target="_blank" rel="noopener noreferrer">%s</a>' % (c, url, inner)
+
+
+GH_LINK = a(GH, "GitHub", "mono")
+BS_LINK = a(BS, "Bluesky", "mono")
+
+# ---------------------------------------------------------------- shared stage
+
+STAGE_CSS = """
+.canvas{container-type:inline-size;width:100%;overflow:hidden;position:relative;background:#000;box-shadow:inset 0 0 0 1px #26262a}
+.site{width:100%;position:relative;overflow:hidden;font-size:1.25cqw;line-height:1.45;-webkit-font-smoothing:antialiased}
+.desktop .site{height:69.4444cqw}
+.mobile .site{height:216.4103cqw}
+.site a{color:inherit;text-decoration:none}
+.site a:hover{text-decoration:underline;text-underline-offset:.24em}
+.site a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+.site h1,.site h2,.site h3,.site h4,.site p,.site figure,.site pre{margin:0;font-weight:400}
+.site ul{margin:0;padding:0;list-style:none}
+.site .mono{font-family:"Space Mono",ui-monospace,monospace}
+.site .serif{font-family:"DM Serif Display",Georgia,serif}
+.site .grotesk{font-family:"Space Grotesk",system-ui,sans-serif}
+.site .anton{font-family:"Anton",Impact,sans-serif}
+.site .eyebrow{font-family:"Space Mono",monospace;text-transform:uppercase;letter-spacing:.22em}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes breathe{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.95;transform:scale(1.035)}}
+@keyframes draw{from{stroke-dashoffset:var(--len,600)}}
+@keyframes scanbeam{0%{transform:translateY(-14%)}100%{transform:translateY(114%)}}
+@keyframes blink{0%,48%{opacity:1}49%,100%{opacity:0}}
+@keyframes meter{0%,100%{transform:scaleY(.2)}50%{transform:scaleY(1)}}
+@keyframes sway{0%,100%{transform:translateX(-1.6%) rotate(var(--r,0deg))}50%{transform:translateX(1.6%) rotate(var(--r,0deg))}}
+@keyframes bob{0%,100%{transform:translateY(-.5cqw)}50%{transform:translateY(.5cqw)}}
+@keyframes rise{0%{transform:translateY(0);opacity:0}12%{opacity:.7}100%{transform:translateY(-46cqw);opacity:0}}
+@keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.72}94%{opacity:1}97%{opacity:.85}98%{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+  .site *{animation:none!important;transition:none!important}
+  .site .draw{stroke-dashoffset:0!important}
+  .site [class*="reveal"]{opacity:1!important;transform:none!important}
+}
+"""
+
+# ---------------------------------------------------------------- A: Observatory
+
+OBS_CSS = """
+.obs{background:radial-gradient(130% 90% at 78% 92%,#16214c 0%,#0a1132 32%,#05070f 100%);color:#f1ecdf;padding:3.2cqw 4.6cqw}
+.obs .sky{position:absolute;inset:0;background:
+  radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),
+  radial-gradient(1px 1px at 28% 8%,#cfd6f2,transparent),
+  radial-gradient(1.4px 1.4px at 44% 22%,#fff,transparent),
+  radial-gradient(1px 1px at 61% 12%,#b9c2e6,transparent),
+  radial-gradient(1.2px 1.2px at 72% 30%,#fff,transparent),
+  radial-gradient(1px 1px at 88% 16%,#d6dcf5,transparent),
+  radial-gradient(1px 1px at 8% 44%,#cbd2ee,transparent),
+  radial-gradient(1.3px 1.3px at 34% 52%,#fff,transparent),
+  radial-gradient(1px 1px at 52% 64%,#c6cdec,transparent),
+  radial-gradient(1px 1px at 20% 74%,#e7ebfb,transparent),
+  radial-gradient(1.4px 1.4px at 66% 78%,#fff,transparent),
+  radial-gradient(1px 1px at 82% 58%,#cdd4f0,transparent),
+  radial-gradient(1px 1px at 90% 84%,#dfe4f7,transparent);
+  opacity:.85}
+.obs .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 50% 50%,#fff,transparent);background-size:11cqw 11cqw;opacity:.18;animation:twinkle 7s ease-in-out infinite}
+.obs-top{position:absolute;top:3.2cqw;left:4.6cqw;right:4.6cqw;display:flex;justify-content:space-between;align-items:baseline;z-index:3}
+.obs-word{font-size:2.3cqw;letter-spacing:-.01em}
+.obs-top nav{display:flex;gap:2.4cqw;font-size:.92cqw;color:#b9c1de}
+.obs-name{position:absolute;top:13.4cqw;left:4.6cqw;width:54cqw;z-index:3}
+.obs-name .eyebrow{font-size:.82cqw;color:#c9a45f}
+.obs-name h1{font-size:7.1cqw;line-height:.99;letter-spacing:-.028em;margin-top:1.8cqw}
+.obs-name h1 em{font-style:italic;color:#e8b96a}
+.obs-name p{font-size:1.34cqw;line-height:1.5;color:#aab2cf;max-width:32cqw;margin-top:2.4cqw}
+.obs-disc{position:absolute;right:-3cqw;top:28cqw;width:40cqw;height:40cqw;border-radius:50%;z-index:2;
+  background:
+   radial-gradient(6% 6% at 30% 34%,rgba(150,105,45,.5),transparent 70%),
+   radial-gradient(8% 8% at 62% 26%,rgba(150,105,45,.42),transparent 70%),
+   radial-gradient(10% 10% at 48% 62%,rgba(150,105,45,.35),transparent 70%),
+   radial-gradient(5% 5% at 74% 54%,rgba(150,105,45,.4),transparent 70%),
+   radial-gradient(circle at 34% 28%,#fff8ea 0%,#f6dda6 40%,#dcac61 70%,#a9762f 100%);
+  box-shadow:0 0 11cqw 1.6cqw rgba(240,197,124,.3),inset -3cqw -4cqw 7cqw rgba(120,72,22,.42)}
+.obs-disc:before{content:"";position:absolute;inset:-2.4cqw;border-radius:50%;border:.16cqw solid rgba(232,185,106,.4);box-shadow:0 0 5cqw rgba(232,185,106,.22);animation:breathe 9s ease-in-out infinite}
+.obs-disc:after{content:"";position:absolute;inset:-6.4cqw;border-radius:50%;border:.1cqw solid rgba(180,196,240,.16)}
+.obs-horizon{position:absolute;left:0;right:0;bottom:0;height:24cqw;z-index:1;background:linear-gradient(180deg,transparent,rgba(3,4,12,.72) 52%,#02030a)}
+.obs-horizon:before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,185,106,.5),transparent)}
+.obs-const{position:absolute;top:8cqw;right:4.6cqw;width:25cqw;z-index:3}
+.obs-const .cap{display:flex;justify-content:space-between;font-size:.78cqw;color:#c9a45f}
+.obs-const svg{width:100%;height:auto;margin-top:.6cqw;overflow:visible}
+.obs-const .draw{stroke-dasharray:var(--len);animation:draw 2.4s ease-out both}
+.obs-index{position:absolute;left:4.6cqw;bottom:4.4cqw;width:58cqw;display:grid;grid-template-columns:1fr 1fr;gap:3.6cqw;z-index:3}
+.obs-index article{border-top:1px solid rgba(241,236,223,.28);padding-top:1.4cqw}
+.obs-index .mono{font-size:.76cqw;color:#a9b1cf;letter-spacing:.1em}
+.obs-index h3{font-size:2.5cqw;letter-spacing:-.02em;margin:.5cqw 0 .3cqw}
+.obs-index p{font-size:1cqw;color:#98a0bf}
+.obs-foot{position:absolute;left:4.6cqw;right:4.6cqw;bottom:1.5cqw;display:flex;justify-content:space-between;font-size:.74cqw;color:#7d86a8;z-index:3}
+/* mobile */
+.mobile .obs{padding:6cqw 6cqw}
+.mobile .obs-word{font-size:5cqw}
+.mobile .obs-top nav{font-size:2.5cqw;gap:5cqw}
+.mobile .obs-name{top:15cqw;left:6cqw;width:88cqw}
+.mobile .obs-name .eyebrow{font-size:2.2cqw}
+.mobile .obs-name h1{font-size:14.5cqw;margin-top:4cqw}
+.mobile .obs-name p{font-size:3.3cqw;max-width:84cqw;margin-top:5cqw}
+.mobile .obs-disc{left:5cqw;right:auto;top:104cqw;width:46cqw;height:46cqw}
+.mobile .obs-const{top:92cqw;right:5cqw;width:40cqw}
+.mobile .obs-const .cap{font-size:2.1cqw}
+.mobile .obs-index{left:6cqw;right:6cqw;bottom:16cqw;width:auto;grid-template-columns:1fr;gap:4cqw}
+.mobile .obs-index .mono{font-size:2cqw}
+.mobile .obs-index h3{font-size:6.6cqw}
+.mobile .obs-index p{font-size:3cqw}
+.mobile .obs-foot{left:6cqw;right:6cqw;bottom:5cqw;font-size:1.9cqw}
+"""
+
+OBS_CONST = """
+<svg viewBox="0 0 100 74" role="img" aria-label="Constellation marking the Models catalogue">
+  <g stroke="#e8b96a" stroke-width=".3" fill="none" opacity=".85">
+    <path class="draw" style="--len:120" d="M12 22 L34 12 L54 27 L45 50 L20 46 Z"/>
+    <path class="draw" style="--len:104" d="M54 27 L76 17 L89 38 L70 56 L45 50"/>
+    <path class="draw" style="--len:52" d="M12 22 L34 12"/>
+  </g>
+  <g fill="#fff6e0">
+    <circle cx="12" cy="22" r="1.1"/><circle cx="34" cy="12" r="1.5"/><circle cx="54" cy="27" r="1"/><circle cx="45" cy="50" r="1.2"/><circle cx="20" cy="46" r=".9"/>
+    <circle cx="76" cy="17" r="1.3"/><circle cx="89" cy="38" r="1"/><circle cx="70" cy="56" r="1.5"/>
+  </g>
+  <g class="mono" fill="#aab2cf" font-size="4.2">
+    <text x="4" y="17">GPT</text><text x="30" y="7">CLAUDE</text><text x="56" y="22">GEMINI</text>
+    <text x="75" y="62">LLAMA</text><text x="86" y="34">MISTRAL</text>
+  </g>
+</svg>
+"""
+
+OBS = (
+    '<div class="site obs">'
+    '<span class="sky" aria-hidden="true"></span><span class="stars" aria-hidden="true"></span>'
+    '<header class="obs-top">'
+    '<span class="obs-word serif">MusseJusse</span>'
+    '<nav>%s %s</nav>'
+    "</header>"
+    '<div class="obs-name">'
+    '<span class="eyebrow">Personal site / experiments</span>'
+    "<h1>Always building.<br><em>Never finished.</em></h1>"
+    "<p>I'm Musse. I make small things for the web and follow the question until it runs out.</p>"
+    "</div>"
+    '<div class="obs-disc" aria-hidden="true"></div>'
+    '<div class="obs-horizon" aria-hidden="true"></div>'
+    '<figure class="obs-const"><figcaption class="cap"><span>Object 02</span><span>Models</span></figcaption>'
+    + OBS_CONST
+    + "</figure>"
+    '<section class="obs-index">'
+    '<article><span class="mono">Object 01 / Next.js</span>'
+    "<h3>%s</h3><p>Which one is rounder?</p></article>"
+    '<article><span class="mono">Object 02 / Astro</span>'
+    "<h3>%s</h3><p>A catalogue of every model.</p></article>"
+    "</section>"
+    '<footer class="obs-foot"><span>MusseJusse / always a work in progress</span><span>N. Latitude, unknown</span></footer>'
+    "</div>"
+) % (GH_LINK, BS_LINK, a(R, "Roundest Pokémon"), a(M, "Models"))
+
+# ---------------------------------------------------------------- B: Riso print
+
+RISO_CSS = """
+.riso{background:#f7f2e7;color:#17130f;padding:3.4cqw 4.2cqw}
+.riso .dotgrid{position:absolute;inset:0;background-image:radial-gradient(rgba(23,19,15,.13) 1px,transparent 1.4px);background-size:1.5cqw 1.5cqw;opacity:.5}
+.riso .grain{position:absolute;inset:0;opacity:.16;mix-blend-mode:multiply;background-image:radial-gradient(rgba(23,19,15,.5) .5px,transparent .6px);background-size:.35cqw .35cqw}
+.riso-top{position:relative;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.riso-top .badge{font-size:.78cqw;letter-spacing:.1em;border:.14cqw solid #17130f;padding:.5cqw .9cqw}
+.riso-word{font-size:2.5cqw;letter-spacing:-.01em;text-transform:uppercase}
+.riso-top nav{display:flex;gap:2.2cqw;font-size:.9cqw}
+.riso h1{position:relative;width:66cqw;margin-top:5.4cqw;font-family:"Anton",Impact,sans-serif;font-size:10.4cqw;line-height:.84;text-transform:uppercase;letter-spacing:-.005em;color:#1b2a8f;z-index:2;white-space:pre}
+.riso h1:before,.riso h1:after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;white-space:pre;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.riso h1:before{background:radial-gradient(circle,#ffd23f 33%,transparent 35%) 0 0/.55cqw .55cqw;-webkit-background-clip:text;background-clip:text;transform:translate(.58cqw,.44cqw);z-index:-2}
+.riso h1:after{background:radial-gradient(circle,#ff5c8a 33%,transparent 35%) 0 0/.55cqw .55cqw;-webkit-background-clip:text;background-clip:text;transform:translate(.3cqw,.24cqw);z-index:-1}
+.riso .kicker{position:absolute;top:20cqw;right:4.2cqw;width:22cqw;font-size:1.05cqw;line-height:1.45;z-index:3}
+.riso .kicker b{font-weight:700}
+.riso .sticker{position:absolute;top:6.4cqw;right:8cqw;width:9.6cqw;height:9.6cqw;border-radius:50%;background:#ff5c8a;color:#fff;display:grid;place-content:center;text-align:center;font-family:"Anton",sans-serif;font-size:1.5cqw;line-height:.95;transform:rotate(9deg);z-index:4;box-shadow:.5cqw .5cqw 0 #1b2a8f}
+.riso-cards{position:absolute;left:4.2cqw;right:4.2cqw;bottom:6.6cqw;display:grid;grid-template-columns:1fr 1fr;gap:3cqw;z-index:2}
+.riso .card{position:relative;height:22cqw;background:#fffdf7;border:.16cqw solid #17130f;padding:1.8cqw;display:flex;flex-direction:column;overflow:hidden}
+.riso .card.pink{transform:rotate(-1.3deg);box-shadow:.7cqw .7cqw 0 #ff5c8a}
+.riso .card.blue{transform:rotate(1.1deg);box-shadow:.7cqw .7cqw 0 #1b2a8f}
+.riso .card .mono{font-size:.74cqw;letter-spacing:.08em}
+.riso .card h3{font-family:"Anton",sans-serif;font-size:2.8cqw;text-transform:uppercase;margin-top:.4cqw;position:relative;z-index:2}
+.riso .card p{font-size:.96cqw;margin-top:.5cqw;position:relative;z-index:2}
+.riso .card .go{margin-top:auto;font-size:1.7cqw;align-self:flex-end;position:relative;z-index:2}
+.riso .halftone{position:absolute;right:-2cqw;top:-1cqw;width:15cqw;height:15cqw;border-radius:50%;background:radial-gradient(circle,#17130f 36%,transparent 38%) 0 0/.5cqw .5cqw;opacity:.85}
+.riso .card.blue .halftone{border-radius:0;background:radial-gradient(circle,#1b2a8f 36%,transparent 38%) 0 0/.5cqw .5cqw}
+.riso-foot{position:absolute;left:4.2cqw;right:4.2cqw;bottom:1.5cqw;display:flex;justify-content:space-between;font-size:.74cqw;letter-spacing:.04em;z-index:3;border-top:.14cqw solid #17130f;padding-top:1cqw}
+/* mobile */
+.mobile .riso{padding:6cqw 6cqw}
+.mobile .riso-word{font-size:6cqw}
+.mobile .riso-top{flex-wrap:wrap;gap:3cqw}
+.mobile .riso-top .riso-word{flex:1 0 100%}
+.mobile .riso-top nav{font-size:2.5cqw;gap:5cqw}
+.mobile .riso-top .badge{font-size:2cqw;border-width:.4cqw}
+.mobile .riso h1{width:90cqw;margin-top:9cqw;font-size:13cqw;line-height:1}
+.mobile .riso h1:before{background-size:1cqw 1cqw;transform:translate(1.1cqw,.85cqw)}
+.mobile .riso h1:after{background-size:1cqw 1cqw;transform:translate(.55cqw,.45cqw)}
+.mobile .riso .kicker{position:static;width:64cqw;margin-top:7cqw;font-size:3.3cqw}
+.mobile .riso .sticker{top:66cqw;right:5cqw;width:18cqw;height:18cqw;font-size:3cqw;box-shadow:1cqw 1cqw 0 #1b2a8f}
+.mobile .riso-cards{position:static;margin-top:9cqw;display:grid;grid-template-columns:1fr;gap:6cqw}
+.mobile .riso .card{height:40cqw;padding:4cqw;border-width:.4cqw}
+.mobile .riso .card.pink{box-shadow:1.4cqw 1.4cqw 0 #ff5c8a}
+.mobile .riso .card.blue{box-shadow:1.4cqw 1.4cqw 0 #1b2a8f}
+.mobile .riso .card .mono{font-size:2.1cqw}
+.mobile .riso .card h3{font-size:7cqw}
+.mobile .riso .card p{font-size:3.1cqw}
+.mobile .riso .card .go{font-size:4.4cqw}
+.mobile .riso .halftone{width:34cqw;height:34cqw;right:-4cqw;background-size:1.2cqw 1.2cqw}
+.riso-foot{position:absolute}
+.mobile .riso-foot{left:6cqw;right:6cqw;bottom:4cqw;font-size:2cqw;border-top-width:.4cqw;flex-direction:column;gap:1.4cqw}
+"""
+
+RISO = (
+    '<div class="site riso">'
+    '<span class="dotgrid" aria-hidden="true"></span><span class="grain" aria-hidden="true"></span>'
+    '<header class="riso-top"><span class="riso-word grotesk">mussejusse</span>'
+    '<span class="badge mono">RISO / EDITION 01</span>'
+    '<nav>%s %s</nav></header>'
+    '<h1 data-t="ALWAYS\nBUILDING\nNEVER FINISHED">ALWAYS\nBUILDING\nNEVER FINISHED</h1>'
+    '<span class="sticker" aria-hidden="true">NEW<br>WORK</span>'
+    '<p class="kicker grotesk">A screenprint of a personal site. Two inks, one <b>Roundest Pokémon</b>, one <b>Models</b> catalogue. Printed by hand, mostly.</p>'
+    '<section class="riso-cards">'
+    '<article class="card pink"><span class="mono">LOT 01 / NEXT.JS / COMPARISON</span>'
+    '<span class="halftone" aria-hidden="true"></span>'
+    "<h3>%s</h3><p>Which one is rounder?</p><span class=\"go\">↗</span></article>"
+    '<article class="card blue"><span class="mono">LOT 02 / ASTRO / REFERENCE</span>'
+    '<span class="halftone" aria-hidden="true"></span>'
+    "<h3>%s</h3><p>The model catalogue, pared back.</p><span class=\"go\">↗</span></article>"
+    "</section>"
+    '<footer class="riso-foot mono"><span>Made by Musse. Hosted on Vercel.</span><span>Source on GitHub</span></footer>'
+    "</div>"
+) % (GH_LINK, BS_LINK, a(R, "Roundest Pokémon"), a(M, "Models"))
+
+# ---------------------------------------------------------------- C: Blueprint
+
+BP_CSS = """
+.bp{background:#0c3055;color:#dbeafb;padding:3.2cqw 4cqw}
+.bp .sheet{position:absolute;inset:1.4cqw;border:.12cqw solid rgba(219,234,251,.5)}
+.bp .grid{position:absolute;inset:1.4cqw;
+  background-image:linear-gradient(rgba(219,234,251,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(219,234,251,.09) 1px,transparent 1px),
+  linear-gradient(rgba(219,234,251,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(219,234,251,.16) 1px,transparent 1px);
+  background-size:2.5cqw 2.5cqw,2.5cqw 2.5cqw,12.5cqw 12.5cqw,12.5cqw 12.5cqw}
+.bp .reg{position:absolute;font-size:1.6cqw;color:rgba(219,234,251,.6);z-index:4}
+.bp .reg.tl{top:1.8cqw;left:2.2cqw}.bp .reg.tr{top:1.8cqw;right:2.2cqw}
+.bp .reg.bl{bottom:1.8cqw;left:2.2cqw}.bp .reg.br{bottom:1.8cqw;right:2.2cqw}
+.bp-top{position:absolute;top:3.2cqw;left:4.4cqw;right:4.4cqw;display:flex;justify-content:space-between;font-size:.82cqw;letter-spacing:.14em;z-index:3}
+.bp-top nav{display:flex;gap:2.4cqw}
+.bp-hero{position:absolute;top:11cqw;left:4.4cqw}
+.bp-hero .eyebrow{font-size:.78cqw;color:#8fb6dd}
+.bp-hero h1{margin-top:1.4cqw;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:9.6cqw;line-height:.9;letter-spacing:.01em;text-transform:uppercase;-webkit-text-stroke:.14cqw #dbeafb;color:transparent}
+.bp-dim{display:flex;align-items:center;gap:1cqw;margin-top:1.6cqw;width:46cqw;color:#9cc2e6;font-size:.76cqw}
+.bp-dim .line{position:relative;flex:1;height:.12cqw;background:currentColor}
+.bp-dim .line:before,.bp-dim .line:after{content:"";position:absolute;top:-.55cqw;width:.12cqw;height:1.2cqw;background:currentColor}
+.bp-dim .line:before{left:0}.bp-dim .line:after{right:0}
+.bp-detail{position:absolute;width:37cqw;z-index:3}
+.bp-detail.r{left:53.4cqw;top:9cqw}
+.bp-detail.m{left:53.4cqw;top:39.5cqw}
+.bp-frame{position:relative;height:23cqw;border:.14cqw solid rgba(219,234,251,.7)}
+.bp-frame .tag{position:absolute;top:-.9cqw;left:1.4cqw;background:#0c3055;padding:0 .7cqw;font-size:.72cqw;letter-spacing:.14em;color:#9cc2e6}
+.bp-frame svg{position:absolute;inset:0;width:100%;height:100%}
+.bp-detail h3{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:2.1cqw;text-transform:uppercase;margin-top:1.4cqw;letter-spacing:.02em}
+.bp-detail p{font-size:.92cqw;color:#a9c9e8;margin-top:.4cqw;max-width:30cqw}
+.bp-detail .go{position:absolute;right:0;top:24.6cqw;font-size:1.8cqw}
+.bp-titleblock{position:absolute;left:4.4cqw;bottom:3.2cqw;width:42cqw;border:.14cqw solid rgba(219,234,251,.75);display:grid;grid-template-columns:1.1fr 1fr 1fr;z-index:3;background:rgba(6,27,48,.55)}
+.bp-titleblock div{border-right:.12cqw solid rgba(219,234,251,.4);border-bottom:.12cqw solid rgba(219,234,251,.4);padding:.9cqw 1.1cqw}
+.bp-titleblock div:nth-child(3n){border-right:0}
+.bp-titleblock div:nth-last-child(-n+3){border-bottom:0}
+.bp-titleblock span{display:block;font-size:.62cqw;letter-spacing:.16em;color:#7fa9d2}
+.bp-titleblock b{display:block;font-weight:700;font-size:1.15cqw;margin-top:.25cqw}
+.bp-titleblock .accent b{color:#ffd166}
+.bp-notes{position:absolute;left:4.4cqw;bottom:14cqw;width:42cqw;z-index:3;font-family:"Space Mono",monospace}
+.bp-notes h4{font-size:.66cqw;letter-spacing:.18em;color:#7fa9d2;margin:0 0 .9cqw;font-weight:400}
+.bp-notes ul{display:grid;gap:.5cqw}
+.bp-notes li{font-size:.8cqw;color:#a9c9e8;padding-left:1.6cqw;position:relative}
+.bp-notes li:before{content:attr(data-n);position:absolute;left:0;color:#ffd166}
+.bp-sweep{position:absolute;left:1.4cqw;right:1.4cqw;top:1.4cqw;height:2.4cqw;background:linear-gradient(180deg,transparent,rgba(180,220,255,.5),transparent);animation:scanbeam 7s linear infinite;mix-blend-mode:screen;opacity:.5;z-index:2}
+/* mobile */
+.mobile .bp{padding:6cqw}
+.mobile .bp .sheet{inset:3cqw}
+.mobile .bp .grid{inset:3cqw;background-size:6cqw 6cqw,6cqw 6cqw,30cqw 30cqw,30cqw 30cqw}
+.mobile .bp .reg{font-size:4cqw}
+.mobile .bp-top{top:7cqw;left:7cqw;right:7cqw;font-size:2.1cqw}
+.mobile .bp-top nav{gap:5cqw}
+.mobile .bp-hero{position:static;padding:12cqw 6cqw 0}
+.mobile .bp-hero .eyebrow{font-size:2.1cqw}
+.mobile .bp-hero h1{font-size:20cqw;margin-top:3cqw;-webkit-text-stroke-width:.36cqw}
+.mobile .bp-dim{width:74cqw;margin-top:3.4cqw;font-size:2cqw}
+.mobile .bp-detail{position:static;width:auto;padding:5cqw 6cqw 0}
+.mobile .bp-frame{height:37cqw;border-width:.4cqw}
+.mobile .bp-frame .tag{font-size:1.9cqw;background:#0c3055}
+.mobile .bp-detail h3{font-size:5cqw;margin-top:2.4cqw}
+.mobile .bp-detail p{font-size:2.7cqw;max-width:none;margin-top:1.2cqw}
+.mobile .bp-detail .go{display:none}
+.mobile .bp-titleblock{position:static;margin:6cqw 6cqw 0;width:auto;border-width:.4cqw;grid-template-columns:1fr 1fr}
+.mobile .bp-titleblock div{padding:2.2cqw 2.2cqw;border-right-width:.35cqw;border-bottom-width:.35cqw}
+.mobile .bp-titleblock span{font-size:1.6cqw}
+.mobile .bp-titleblock b{font-size:3cqw}
+.mobile .bp-notes{display:none}
+"""
+
+BP_ROUNDEST_SVG = """
+<svg viewBox="0 0 200 120" role="img" aria-label="Technical drawing of a circle with its diameter dimensioned">
+  <g fill="none" stroke="#dbeafb" stroke-width="1">
+    <circle cx="78" cy="60" r="40"/>
+    <circle cx="78" cy="60" r="28" stroke-dasharray="3 3" opacity=".6"/>
+    <path d="M78 20 V100 M38 60 H118"/>
+  </g>
+  <g fill="none" stroke="#ffd166" stroke-width="1.1">
+    <path d="M78 60 L110 32" marker-end="url(#ar)"/>
+  </g>
+  <defs><marker id="ar" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#ffd166"/></marker></defs>
+  <g fill="#9cc2e6" font-family="monospace" font-size="6" letter-spacing=".5">
+    <text x="120" y="46">R 50.00</text><text x="82" y="16">90°</text><text x="150" y="64">&#8960; 100.00</text>
+    <text x="8" y="112">DETAIL A / ROUNDNESS</text>
+  </g>
+  <g stroke="#ffd166" stroke-width="1"><path d="M126 60 H150"/><path d="M78 60 H50" opacity=".5"/></g>
+</svg>
+"""
+
+BP_MODELS_SVG = """
+<svg viewBox="0 0 200 120" role="img" aria-label="Technical drawing of stacked layers with dimensions">
+  <g fill="none" stroke="#dbeafb" stroke-width="1">
+    <rect x="40" y="18" width="120" height="16"/>
+    <rect x="40" y="42" width="120" height="16"/>
+    <rect x="40" y="66" width="120" height="16"/>
+    <rect x="40" y="90" width="120" height="16" stroke-dasharray="3 3" opacity=".6"/>
+  </g>
+  <g stroke="#ffd166" stroke-width="1.1"><path d="M32 18 V106"/><path d="M180 42 V82"/></g>
+  <g fill="#9cc2e6" font-family="monospace" font-size="6" letter-spacing=".5">
+    <text x="52" y="29">PROVIDERS</text><text x="52" y="53">MODELS</text><text x="52" y="77">CAPABILITIES</text><text x="52" y="101">PRICING</text>
+    <text x="150" y="64">N = 200+</text><text x="8" y="112">DETAIL B / LAYERS</text>
+  </g>
+  <g fill="none" stroke="#dbeafb" stroke-width=".6" opacity=".5"><path d="M160 26 H180 M160 50 H180 M160 74 H180"/></g>
+</svg>
+"""
+
+BP = (
+    '<div class="site bp">'
+    '<span class="grid" aria-hidden="true"></span>'
+    '<span class="reg mono tl">+</span><span class="reg mono tr">+</span><span class="reg mono bl">+</span><span class="reg mono br">+</span>'
+    '<span class="sheet" aria-hidden="true"></span>'
+    '<span class="sweep" aria-hidden="true"></span>'
+    '<header class="bp-top mono"><span>MUSSEJUSSE.COM / EXPERIMENTS</span><nav>%s %s</nav></header>'
+    '<div class="bp-hero"><span class="eyebrow mono">Drawing no. 01 / revision C</span>'
+    "<h1>Musse<br>Jusse</h1>"
+    '<div class="bp-dim mono"><span>|<</span><span class="line"></span><span>1440 &times; &infin;</span><span class="line"></span><span>|&gt;</span></div></div>'
+    '<section class="bp-detail r"><div class="bp-frame"><span class="tag mono">DETAIL A</span>'
+    + BP_ROUNDEST_SVG
+    + "</div>"
+    '<h3>%s</h3><p>Next.js, server actions, a KV store, and one very specific question.</p><span class="go">↗</span></section>'
+    '<section class="bp-detail m"><div class="bp-frame"><span class="tag mono">DETAIL B</span>'
+    + BP_MODELS_SVG
+    + "</div>"
+    '<h3>%s</h3><p>Astro, ultra light, the whole model catalogue in four layers.</p><span class="go">↗</span></section>'
+    '<div class="bp-notes"><h4>NOTES</h4><ul>'
+    '<li data-n="1">Built to be read. Every line earns its place.</li>'
+    '<li data-n="2">Two experiments, drawn from life.</li>'
+    '</ul></div>'
+    '<div class="bp-titleblock mono">'
+    '<div class="accent"><span>PROJECT</span><b>mussejusse.com</b></div><div><span>DRAWN</span><b>M. Jusse</b></div><div><span>SHEET</span><b>01 / 01</b></div>'
+    '<div><span>SCALE</span><b>1 : 1</b></div><div><span>DATE</span><b>2026</b></div><div class="accent"><span>STATUS</span><b>Build</b></div>'
+    "</div></div>"
+) % (GH_LINK, BS_LINK, a(R, "Roundest Pokémon"), a(M, "Models"))
+
+# ---------------------------------------------------------------- D: Tide
+
+TIDE_CSS = """
+.tide{background:linear-gradient(180deg,#1ec9cb 0%,#12a3b5 14%,#0a6f8c 34%,#074055 56%,#031c2b 78%,#01080e 100%);color:#eafdfb;padding:3.2cqw 4.4cqw}
+.tide .rays{position:absolute;top:-10cqw;left:0;right:0;height:70cqw;opacity:.5;filter:blur(1.4cqw);pointer-events:none;
+  background:repeating-linear-gradient(74deg,rgba(190,252,244,.5) 0 1.4cqw,transparent 1.4cqw 7cqw);
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent);mask-image:linear-gradient(180deg,#000,transparent);animation:sway 11s ease-in-out infinite}
+.tide .caustics{position:absolute;left:-20%;top:-4cqw;width:140%;height:52cqw;opacity:.35;mix-blend-mode:soft-light;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.9) 0 1.2%,transparent 1.4%),radial-gradient(circle,rgba(255,255,255,.7) 0 1%,transparent 1.3%);
+  background-size:14cqw 11cqw,19cqw 15cqw;animation:sway 16s ease-in-out infinite reverse}
+.tide .bubbles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.tide .bubbles i{position:absolute;bottom:6cqw;width:.7cqw;height:.7cqw;border-radius:50%;background:rgba(255,255,255,.5);animation:rise 12s linear infinite}
+.tide .bubbles i:nth-child(1){left:12%;animation-delay:0s}.tide .bubbles i:nth-child(2){left:34%;animation-delay:4s}
+.tide .bubbles i:nth-child(3){left:58%;animation-delay:7s}.tide .bubbles i:nth-child(4){left:78%;animation-delay:2s}.tide .bubbles i:nth-child(5){left:90%;animation-delay:9s}
+.tide-top{position:absolute;top:3.2cqw;left:4.4cqw;right:4.4cqw;display:flex;justify-content:space-between;align-items:baseline;z-index:3}
+.tide-word{font-size:2.4cqw}
+.tide-top nav{display:flex;gap:2.4cqw;font-size:.9cqw;color:#c9fbf5}
+.tide-hero{position:absolute;top:11cqw;left:4.4cqw;width:48cqw;z-index:3}
+.tide-hero .eyebrow{font-size:.78cqw;color:#bff7ef}
+.tide-hero h1{font-size:6.4cqw;line-height:1;letter-spacing:-.02em;margin-top:1.6cqw}
+.tide-hero h1 em{font-style:italic;color:#bff7ef}
+.tide-hero p{font-size:1.3cqw;line-height:1.55;max-width:32cqw;margin-top:2.2cqw;color:#cdeef0}
+.tide-ruler{position:absolute;right:3.2cqw;top:9cqw;bottom:9cqw;width:12cqw;z-index:3}
+.tide-ruler:before{content:"";position:absolute;left:0;top:0;bottom:0;width:.12cqw;background:rgba(234,253,251,.5)}
+.tide-ruler .tick{position:absolute;left:0;font-size:.66cqw;color:#bff7ef;letter-spacing:.1em;white-space:nowrap;padding-left:1.2cqw}
+.tide-ruler .tick:before{content:"";position:absolute;left:0;top:.55cqw;width:1cqw;height:.12cqw;background:rgba(234,253,251,.6)}
+.tide-ruler .tick.a{top:0}.tide-ruler .tick.b{top:33%}.tide-ruler .tick.c{top:66%}.tide-ruler .tick.d{top:100%}
+.tide-ruler .marker{position:absolute;left:-.7cqw;width:1.5cqw;height:1.5cqw;border-radius:50%;background:#7bf2c4;box-shadow:0 0 2cqw #7bf2c4;top:24%;animation:bob 6s ease-in-out infinite}
+.specimen{position:absolute;width:37cqw;padding:2cqw;border-radius:1.6cqw;z-index:3;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:.12cqw solid rgba(255,255,255,.3);
+  backdrop-filter:blur(1.6cqw);box-shadow:0 2cqw 5cqw rgba(0,0,0,.3),inset 0 .2cqw 1cqw rgba(255,255,255,.28)}
+.specimen.r{left:4.4cqw;top:35cqw}
+.specimen.m{right:6.6cqw;top:50cqw}
+.specimen .mono{font-size:.74cqw;letter-spacing:.12em;color:#c9fbf5}
+.specimen h3{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:2.5cqw;letter-spacing:-.01em;margin-top:.6cqw;max-width:70%}
+.specimen p{font-size:.98cqw;color:#d6f4f4;margin-top:.5cqw;max-width:66%}
+.specimen .go{position:absolute;right:2cqw;top:1.8cqw;font-size:1.8cqw}
+.specimen .orb{position:absolute;right:3cqw;bottom:-1cqw;width:8cqw;height:8cqw;border-radius:50%;background:radial-gradient(circle at 36% 32%,#fff,#9fe8ff 45%,rgba(120,242,196,.4));filter:blur(.1cqw)}
+.specimen.m .grid-mark{position:absolute;right:3cqw;bottom:1.6cqw;width:8cqw;height:5cqw;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:1.4cqw 1.4cqw;opacity:.7}
+.tide-foot{position:absolute;left:4.4cqw;right:4.4cqw;bottom:2cqw;display:flex;justify-content:space-between;font-size:.74cqw;color:#9fdfe6;z-index:3}
+/* mobile */
+.mobile .tide{padding:6cqw}
+.mobile .tide-word{font-size:5.2cqw}
+.mobile .tide-top nav{font-size:2.5cqw;gap:5cqw}
+.mobile .tide .rays{height:120cqw;background-size:auto;background:repeating-linear-gradient(70deg,rgba(190,252,244,.45) 0 3cqw,transparent 3cqw 13cqw)}
+.mobile .tide .caustics{height:110cqw;background-size:34cqw 26cqw,44cqw 34cqw}
+.mobile .tide-hero{position:static;padding:16cqw 6cqw 0;width:auto}
+.mobile .tide-hero .eyebrow{font-size:2.2cqw}
+.mobile .tide-hero h1{font-size:13.5cqw;margin-top:3.4cqw}
+.mobile .tide-hero p{font-size:3.5cqw;max-width:none;margin-top:5cqw}
+.mobile .tide-ruler{left:3cqw;right:auto;top:64cqw;bottom:10cqw;width:12cqw;z-index:2}
+.mobile .tide-ruler .tick{font-size:0;padding:0}
+.mobile .tide-ruler .tick:before{width:2.2cqw;height:.3cqw}
+.mobile .tide-ruler .marker{left:-.9cqw;width:2.4cqw;height:2.4cqw}
+.mobile .specimen{position:static;width:auto;margin:0 6cqw;padding:5cqw;border-radius:3cqw;border-width:.35cqw;backdrop-filter:blur(3cqw)}
+.mobile .specimen.r{margin-top:12cqw}
+.mobile .specimen.m{margin-top:6cqw}
+.mobile .specimen .mono{font-size:2cqw}
+.mobile .specimen h3{font-size:6.4cqw}
+.mobile .specimen p{font-size:3cqw}
+.mobile .specimen .go{font-size:4.4cqw;right:5cqw}
+.mobile .specimen .orb{width:22cqw;height:22cqw;right:6cqw;bottom:-4cqw}
+.mobile .specimen.m .grid-mark{width:22cqw;height:14cqw;background-size:3.5cqw 3.5cqw}
+.mobile .tide-foot{left:6cqw;right:6cqw;bottom:5cqw;font-size:1.9cqw}
+"""
+
+TIDE = (
+    '<div class="site tide">'
+    '<span class="rays" aria-hidden="true"></span><span class="caustics" aria-hidden="true"></span>'
+    '<span class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>'
+    '<header class="tide-top"><span class="tide-word serif">MusseJusse</span><nav>%s %s</nav></header>'
+    '<div class="tide-hero"><span class="eyebrow mono">Depth 0000 M / Surface</span>'
+    "<h1>I keep building<br>where it gets <em>dark.</em></h1>"
+    "<p>Below the surface are two experiments: a very round question and a catalogue of every model.</p></div>"
+    '<div class="tide-ruler" aria-hidden="true"><span class="marker"></span>'
+    '<span class="tick a">0 M · SURFACE</span><span class="tick b">200 M · TWILIGHT</span><span class="tick c">1000 M · MIDNIGHT</span><span class="tick d">4000 M · ABYSS</span></div>'
+    '<article class="specimen r"><span class="mono">Specimen 01 / Next.js</span><span class="go">↗</span>'
+    "<h3>%s</h3><p>Which Pokémon is roundest? Come help settle it.</p><span class=\"orb\" aria-hidden=\"true\"></span></article>"
+    '<article class="specimen m"><span class="mono">Specimen 02 / Astro</span><span class="go">↗</span>'
+    "<h3>%s</h3><p>Every model, provider and capability in one current.</p><span class=\"grid-mark\" aria-hidden=\"true\"></span></article>"
+    '<footer class="tide-foot mono"><span>MusseJusse / made on the surface</span><span>Hosted on Vercel</span></footer>'
+    "</div>"
+) % (GH_LINK, BS_LINK, a(R, "Roundest Pokémon"), a(M, "Models"))
+
+# ---------------------------------------------------------------- E: Terminal
+
+GLYPHS = {
+    "M": ["█   █", "██ ██", "█ █ █", "█   █", "█   █"],
+    "U": ["█   █", "█   █", "█   █", "█   █", " ███ "],
+    "S": [" ████", "█    ", " ███ ", "    █", "████ "],
+    "E": ["█████", "█    ", "███  ", "█    ", "█████"],
+    "J": ["█████", "    █", "    █", "█   █", " ███ "],
+}
+
+
+def ascii_word(word):
+    rows = ["" for _ in range(5)]
+    for ci, ch in enumerate(word):
+        g = GLYPHS[ch]
+        for r in range(5):
+            rows[r] += g[r] + (" " if ci < len(word) - 1 else "")
+    return "\n".join(rows)
+
+
+ASCII_ART = ascii_word("MUSSEJUSSE")
+
+
+def bars(n):
+    out = []
+    for i in range(n):
+        h = 20 + (i * 37 % 70)
+        out.append('<i style="height:%d%%;animation-delay:%.2fs"></i>' % (h, (i % 7) * 0.13))
+    return "".join(out)
+
+
+TERM_CSS = """
+.term{background:#070604;color:#ffb454;padding:2.6cqw 3cqw;font-family:"Space Mono",monospace}
+.term .scan{position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(0,0,0,.42) 0 1px,transparent 1px 3px);opacity:.55;pointer-events:none;z-index:5}
+.term .vig{position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 40%,transparent 55%,rgba(0,0,0,.75));pointer-events:none;z-index:5}
+.term .beam{position:absolute;left:0;right:0;top:0;height:16cqw;background:linear-gradient(180deg,transparent,rgba(255,180,84,.14),transparent);animation:scanbeam 6.5s linear infinite;pointer-events:none;z-index:4}
+.term .glow{position:absolute;inset:0;background:radial-gradient(70% 50% at 50% 0%,rgba(255,150,40,.14),transparent 70%);pointer-events:none;z-index:1}
+.term-inner{position:relative;z-index:3;height:100%;display:flex;flex-direction:column}
+.term .status{display:flex;gap:2.4cqw;font-size:.86cqw;color:#c8843a;border-bottom:.12cqw solid rgba(255,180,84,.3);padding-bottom:1cqw}
+.term .status b{color:#ffb454;font-weight:400}
+.term .status .ok{color:#7bff9e}
+.term .ascii{font-size:2.4cqw;line-height:.9;letter-spacing:0;color:#ffbe63;text-shadow:0 0 1.2cqw rgba(255,170,60,.6),0 0 4cqw rgba(255,140,30,.25);white-space:pre;margin:3.4cqw 0 0;animation:flicker 7s linear infinite}
+.term .tagline{font-size:1.5cqw;color:#ffd39a;margin-top:2.4cqw}
+.term .tagline .caret{display:inline-block;width:.9cqw;height:1.7cqw;background:#ffb454;vertical-align:-.3cqw;margin-left:.4cqw;animation:blink 1.05s steps(1) infinite;box-shadow:0 0 1cqw #ffb454}
+.term .grid-head{display:grid;grid-template-columns:6cqw 1.6fr 1fr 1fr 8cqw;gap:1.4cqw;font-size:.72cqw;color:#a86a2c;letter-spacing:.12em;margin-top:4cqw;border-bottom:.12cqw solid rgba(255,180,84,.25);padding-bottom:.8cqw}
+.term .proc{display:grid;grid-template-columns:6cqw 1.6fr 1fr 1fr 8cqw;gap:1.4cqw;align-items:center;font-size:1.05cqw;padding:1.2cqw 0;border-bottom:.12cqw solid rgba(255,180,84,.16);color:#f0b877}
+.term .proc:hover{background:rgba(255,180,84,.08)}
+.term .proc .pid{color:#a86a2c}
+.term .proc .name{color:#ffcf94}
+.term .proc .state{font-size:.82cqw}
+.term .proc .state.run{color:#7bff9e}.term .proc .state.run:before{content:"● ";animation:blink 1.6s steps(1) infinite}
+.term .proc .state.ready{color:#ffd166}.term .proc .state.ready:before{content:"○ "}
+.term .bar{height:.9cqw;background:rgba(255,180,84,.18);position:relative;overflow:hidden}
+.term .bar i{position:absolute;inset:0;transform-origin:left;background:linear-gradient(90deg,#ff9a2e,#ffd166);animation:meter 3.2s ease-in-out infinite}
+.term .wave{margin-top:3.4cqw;border:.12cqw solid rgba(255,180,84,.3);padding:1.4cqw;display:flex;align-items:center;gap:2cqw}
+.term .wave .lbl{font-size:.72cqw;color:#a86a2c;letter-spacing:.14em;white-space:nowrap}
+.term .wave .bars{display:flex;align-items:flex-end;gap:.34cqw;height:5cqw;flex:1}
+.term .wave .bars i{flex:1;background:#ffb454;transform-origin:bottom;animation:meter 1.4s ease-in-out infinite;box-shadow:0 0 1cqw rgba(255,170,60,.5)}
+.term-foot{margin-top:1.4cqw;display:flex;justify-content:space-between;font-size:.8cqw;color:#c8843a;border-top:.12cqw solid rgba(255,180,84,.3);padding-top:1.2cqw}
+.term-foot .prompt{color:#ffcf94}
+.term .logs{margin-top:auto;display:flex;flex-direction:column;gap:.7cqw;font-size:.82cqw;color:#a86a2c}
+.term .logs b{color:#7bff9e;font-weight:400}
+.term .logs i{color:#c8843a;font-style:normal}
+.term .promptline{font-size:1.1cqw;color:#ffcf94;margin-top:1.8cqw}
+.term .promptline .pc{display:inline-block;width:.9cqw;height:1.5cqw;background:#ffb454;vertical-align:-.22cqw;margin-left:.3cqw;animation:blink 1.05s steps(1) infinite;box-shadow:0 0 1cqw #ffb454}
+/* mobile */
+.mobile .term{padding:5cqw 5cqw}
+.mobile .term .status{font-size:2cqw;gap:5cqw;flex-wrap:wrap;padding-bottom:2.4cqw}
+.mobile .term .ascii{font-size:2.02cqw;margin-top:8cqw}
+.mobile .term .tagline{font-size:3.9cqw;margin-top:6cqw}
+.mobile .term .tagline .caret{width:2.2cqw;height:4.2cqw;vertical-align:-.8cqw}
+.mobile .term .grid-head{display:none}
+.mobile .term .proc{grid-template-columns:1fr;gap:.6cqw;font-size:3.4cqw;padding:3.4cqw 0;border-bottom-width:.3cqw;border-color:rgba(255,180,84,.25)}
+.mobile .term .proc .pid{font-size:2.4cqw}
+.mobile .term .proc .state{font-size:2.6cqw}
+.mobile .term .bar{height:2.4cqw;margin-top:1.4cqw}
+.mobile .term .wave{padding:3cqw;margin-top:6cqw;gap:3cqw;border-width:.3cqw}
+.mobile .term .wave .lbl{font-size:2cqw}
+.mobile .term .wave .bars{height:12cqw;gap:.8cqw}
+.mobile .term-foot{font-size:2.1cqw;padding-top:3cqw;flex-direction:column;gap:1.4cqw}
+.mobile .term .logs{font-size:2.1cqw;gap:1.6cqw}
+.mobile .term .promptline{font-size:3.2cqw;margin-top:3cqw}
+.mobile .term .promptline .pc{width:2.2cqw;height:3.8cqw;vertical-align:-.6cqw}
+"""
+
+
+def proc(pid, name, url, stack, state, cls, pct):
+    return (
+        '<a class="proc" href="' + url + '" target="_blank" rel="noopener noreferrer">'
+        '<span class="pid">' + pid + '</span><span class="name">' + name + '</span><span class="stack">' + stack + "</span>"
+        '<span class="state ' + cls + '">' + state + '</span><span class="bar"><i style="width:' + str(pct) + '%"></i></span></a>'
+    )
+
+
+TERM = (
+    '<div class="site term">'
+    '<span class="glow" aria-hidden="true"></span><span class="beam" aria-hidden="true"></span>'
+    '<span class="scan" aria-hidden="true"></span><span class="vig" aria-hidden="true"></span>'
+    '<div class="term-inner">'
+    '<header class="status"><span><b>mussejusse@web</b>:~$</span><span>TTY1</span><span>UPTIME <b>2Y 114D</b></span><span>LOAD <b>0.42</b></span><span class="ok">● ONLINE</span></header>'
+    '<pre class="ascii">' + ASCII_ART + "</pre>"
+    '<p class="tagline">&gt; always building, never finished<span class="caret" aria-hidden="true"></span></p>'
+    '<div class="grid-head"><span>PID</span><span>PROCESS</span><span>STACK</span><span>STATE</span><span>CPU</span></div>'
+    + proc("0001", "roundest_pokemon", R, "NEXT.JS", "RUNNING", "run", 72)
+    + proc("0002", "models", M, "ASTRO", "READY", "ready", 38)
+    + '<div class="wave"><span class="lbl">SIGNAL / LIVE</span><div class="bars">' + bars(34) + "</div></div>"
+    '<div class="logs"><span><b>[ok]</b> roundest_pokemon listening on :3000</span><span><b>[ok]</b> models compiled in 0.81s</span><span><i>[info]</i> 2 experiments, 0 failures, 0 finished</span></div>'
+    '<p class="promptline"><span class="prompt">$</span> ls experiments/ <span class="pc" aria-hidden="true"></span></p>'
+    '<footer class="term-foot"><span><span class="prompt">$</span> __GH__ __BS__</span><span>hosted on vercel / source on github</span></footer>'
+    "</div></div>"
+).replace("__GH__", GH_LINK).replace("__BS__", BS_LINK)
+
+# ---------------------------------------------------------------- review chrome
+
+CHROME_CSS = """
+:root{--ink:#f4f3ef;--dim:#8d8d88;--line:#242427;--bg:#050506}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1760px;margin:0 auto;padding:0 clamp(16px,3vw,52px) 120px}
+.rtop{position:sticky;top:0;z-index:100;background:rgba(5,5,6,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.rtop .row{max-width:1760px;margin:0 auto;padding:14px clamp(16px,3vw,52px);display:flex;justify-content:space-between;align-items:center;gap:20px}
+.rtop h1{font-size:14px;font-weight:500;letter-spacing:.01em}
+.rtop .row>span{font-family:"Space Mono",monospace;font-size:11px;color:var(--dim);letter-spacing:.06em}
+.rnav{display:flex;gap:6px}
+.rnav a{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.08em;padding:6px 11px;border:1px solid var(--line);color:var(--ink);text-decoration:none;transition:background 160ms ease-out,color 160ms ease-out}
+.rnav a:hover{background:var(--ink);color:#000}
+.intro{padding:64px 0 8px;max-width:74ch}
+.intro .k{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.22em;color:var(--dim)}
+.intro h2{font-size:clamp(30px,4.4vw,58px);line-height:1.02;letter-spacing:-.03em;font-weight:500;margin:14px 0 0}
+.intro h2 em{font-family:"DM Serif Display",Georgia,serif;font-style:italic;font-weight:400}
+.intro p{color:var(--dim);margin-top:18px;font-size:15.5px}
+.direction{padding-top:76px;scroll-margin-top:70px}
+.dhead{display:grid;grid-template-columns:auto 1fr;gap:8px 28px;align-items:baseline;border-top:1px solid var(--line);padding-top:20px}
+.dhead .letter{font-family:"Space Mono",monospace;font-size:12px;color:var(--dim);letter-spacing:.1em;grid-row:1 / span 2}
+.dhead h2{font-size:clamp(24px,3vw,38px);font-weight:500;letter-spacing:-.025em}
+.dhead p{color:var(--dim);font-size:14px;max-width:70ch}
+.views{display:grid;grid-template-columns:minmax(0,1440fr) minmax(0,390fr);gap:30px;align-items:start;margin-top:26px}
+.view{min-width:0}
+.vlabel{display:flex;justify-content:space-between;gap:12px;font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.vlabel b{color:var(--ink);font-weight:400}
+.rfoot{margin-top:96px;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--dim);font-size:13px}
+.rfoot a{color:var(--ink)}
+@media(max-width:1180px){
+  .views{grid-template-columns:minmax(0,1fr)}
+  .view.mobile{width:min(100%,390px)}
+  .dhead{grid-template-columns:auto 1fr}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+"""
+
+DIRECTIONS = [
+    ("A", "Observatory", "The page as a night sky: Roundest Pok&eacute;mon is the moon, Models is a constellation that draws itself.", OBS),
+    ("B", "Riso", "A two-ink screenprint: halftone wordmark, misregistration, and two hand-printed project lots.", RISO),
+    ("C", "Blueprint", "An engineering drawing with dimension callouts, detail frames and a title block that signs the work.", BP),
+    ("D", "Tide", "A descent from surface light to the abyss, with a depth gauge and two glass specimens.", TIDE),
+    ("E", "Terminal", "An amber phosphor terminal: ASCII wordmark, a live process table and a signal meter.", TERM),
+]
+
+
+def section(letter, title, desc, markup):
+    views = "".join(
+        '<div class="view %s"><div class="vlabel"><b>%s</b><span>%s</span></div>'
+        '<div class="canvas">%s</div></div>' % (kind, kind.capitalize(), size, markup)
+        for kind, size in [("desktop", "1440 &times; 1000"), ("mobile", "390 &times; 844")]
+    )
+    return (
+        '<section class="direction" id="%s">'
+        '<header class="dhead"><span class="letter">%s</span><h2>%s / %s</h2><p>%s</p></header>'
+        '<div class="views">%s</div></section>'
+    ) % (letter, letter, letter, title, desc, views)
+
+
+def build():
+    sections = "".join(section(*d) for d in DIRECTIONS)
+    nav = "".join('<a href="#%s">%s</a>' % (d[0], d[0]) for d in DIRECTIONS)
+    html = (
+        '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        "<title>MusseJusse / Redesign directions</title>"
+        "<style>" + FONT_CSS + STAGE_CSS + CHROME_CSS + OBS_CSS + RISO_CSS + BP_CSS + TIDE_CSS + TERM_CSS + "</style>"
+        "</head><body>"
+        '<div class="rtop"><div class="row"><h1>MusseJusse / redesign directions</h1>'
+        "<span>five directions &middot; desktop + mobile</span>"
+        '<nav class="rnav" aria-label="Directions">' + nav + "</nav></div></div>"
+        '<div class="wrap">'
+        '<header class="intro"><span class="k">FULL UI REDESIGN / ROUND ONE</span>'
+        "<h2>Five ways this site could feel. Each one is a working page, not a picture, so resize the window and it holds up.</h2>"
+        "<p>Every direction is built from the same content: MusseJusse, two experiments, two links. The differences are all voice. Pick one, or mix the parts you like, and I will build it for real.</p></header>"
+        + sections
+        + '<footer class="rfoot"><span>Five directions, rendered live in the browser with embedded typefaces.</span>'
+        "<span>" + a(GH, "GitHub", "") + " &middot; " + a(BS, "Bluesky", "") + "</span></footer>"
+        "</div></body></html>"
+    )
+    return html
+
+
+if __name__ == "__main__":
+    html = build()
+    out = ROOT / "redesign-directions.html"
+    out.write_text(html)
+    assert "\u2014" not in html, "em dash found"
+    assert "http://" not in html.replace("http://www.w3.org", ""), "insecure url"
+    size = len(html.encode())
+    assert size < 512 * 1024, "over 512KB: %d" % size
+    print("%s: %s bytes" % (out, format(size, ",")))
