@@ -7,6 +7,7 @@ Fonts are embedded as woff2 so the published document needs no network.
 
 from pathlib import Path
 import base64
+import math
 
 ROOT = Path(__file__).resolve().parent
 FONTS = ROOT / "redesign-assets" / "fonts"
@@ -593,6 +594,384 @@ TERM = (
     "</div></div>"
 ).replace("__GH__", GH_LINK).replace("__BS__", BS_LINK)
 
+# ---------------------------------------------------------------- horology helpers
+
+
+def _polar(cx, cy, r, ang):
+    a = math.radians(ang)
+    return (cx + r * math.sin(a), cy - r * math.cos(a))
+
+
+def _spiral(cx, cy, r0, r1, turns, steps=150):
+    pts = []
+    for i in range(steps + 1):
+        t = i / steps
+        r = r0 + (r1 - r0) * t
+        pts.append(_polar(cx, cy, r, turns * 360 * t))
+    return "M" + "L".join("%.1f %.1f" % p for p in pts)
+
+
+def _gear(cx, cy, r, teeth, dur, rev=False):
+    circ = 2 * math.pi * r
+    d = circ / teeth
+    return (
+        '<g class="spin" style="--ox:%.1fpx;--oy:%.1fpx;--d:%ss;animation-direction:%s">'
+        '<circle cx="%.1f" cy="%.1f" r="%.1f" fill="#262c36"/>'
+        '<circle cx="%.1f" cy="%.1f" r="%.1f" fill="none" stroke="#5b6472" stroke-width="%.1f" stroke-dasharray="%.1f %.1f"/>'
+        '<circle cx="%.1f" cy="%.1f" r="%.1f" fill="#161a20" stroke="#5b6472" stroke-width="2"/>'
+        '<circle cx="%.1f" cy="%.1f" r="%.1f" fill="#c9a24a" stroke="#8a6d2a" stroke-width="2"/>'
+        "</g>"
+    ) % (
+        cx, cy, dur, "reverse" if rev else "normal",
+        cx, cy, r,
+        cx, cy, r, max(4.0, r * 0.24), d * 0.58, d * 0.42,
+        cx, cy, r * 0.6,
+        cx, cy, max(5.0, r * 0.15),
+    )
+
+
+def _hand(cx, cy, r, ang, w, color, tail=0.16):
+    x, y = _polar(cx, cy, r, ang)
+    dx, dy = x - cx, y - cy
+    L = math.hypot(dx, dy)
+    px, py = -dy / L * w / 2, dx / L * w / 2
+    d = "M%.1f %.1f L%.1f %.1f L%.1f %.1f Z" % (cx + px, cy + py, x, y, cx - px, cy - py)
+    bx, by = _polar(cx, cy, -r * tail, ang)
+    return (
+        '<path d="%s" fill="%s"/>'
+        '<circle cx="%.1f" cy="%.1f" r="%.1f" fill="%s"/>'
+    ) % (d, color, bx, by, max(4.0, w * 0.55), color)
+
+
+def _movement():
+    p = ['<svg viewBox="0 0 1000 1000" class="mv-svg" role="img" aria-label="Exhibition caseback with gear train and balance wheel">']
+    p.append("<defs>")
+    p.append('<radialGradient id="mplate" cx="40%" cy="34%"><stop offset="0" stop-color="#262c36"/><stop offset="55%" stop-color="#191d24"/><stop offset="100%" stop-color="#0e1115"/></radialGradient>')
+    p.append('<pattern id="geneva" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect width="14" height="28" fill="#232833"/><rect x="14" width="14" height="28" fill="#2d3542"/></pattern>')
+    p.append('<pattern id="perlage" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="8" fill="none" stroke="#2b323d" stroke-width="1.4"/><circle cx="24" cy="24" r="8" fill="none" stroke="#2b323d" stroke-width="1.4"/></pattern>')
+    p.append("</defs>")
+    p.append('<circle cx="500" cy="500" r="500" fill="url(#mplate)"/>')
+    p.append('<circle cx="500" cy="500" r="470" fill="url(#perlage)"/>')
+    p.append('<circle cx="500" cy="500" r="372" fill="url(#geneva)"/>')
+    p.append('<circle cx="500" cy="500" r="372" fill="none" stroke="#49515f" stroke-width="2.5" opacity=".8"/>')
+    p.append('<circle cx="500" cy="500" r="252" fill="url(#perlage)"/>')
+    p.append('<circle cx="500" cy="500" r="252" fill="none" stroke="#49515f" stroke-width="2" opacity=".7"/>')
+    p.append(_gear(600, 380, 104, 32, 18, False))
+    p.append(_gear(724, 556, 76, 24, 13, True))
+    p.append(_gear(540, 662, 60, 20, 10, False))
+    p.append(_gear(455, 455, 64, 22, 12, True))
+    p.append('<g class="balance" style="--ox:360px;--oy:630px">')
+    p.append('<circle cx="360" cy="630" r="132" fill="none" stroke="#727b88" stroke-width="15"/>')
+    p.append('<circle cx="360" cy="630" r="132" fill="none" stroke="#0e1115" stroke-width="3" opacity=".6"/>')
+    for a in (0, 120, 240):
+        x, y = _polar(360, 630, 132, a)
+        p.append('<line x1="360" y1="630" x2="%.1f" y2="%.1f" stroke="#727b88" stroke-width="9"/>' % (x, y))
+    p.append('<circle cx="360" cy="630" r="24" fill="#c9a24a" stroke="#8a6d2a" stroke-width="2.5"/>')
+    p.append('<path class="hair" d="%s" fill="none" stroke="#4a68e0" stroke-width="3"/>' % _spiral(360, 630, 28, 124, 7))
+    p.append('<circle cx="360" cy="630" r="6" fill="#e05555"/>')
+    p.append("</g>")
+    for jx, jy in [(600, 380), (724, 556), (540, 662), (455, 455)]:
+        p.append('<circle cx="%d" cy="%d" r="10" fill="#e05555" stroke="#c9a24a" stroke-width="3"/>' % (jx, jy))
+    for a in (24, 150, 210, 336):
+        x, y = _polar(500, 500, 330, a)
+        p.append('<g transform="rotate(%d %.1f %.1f)"><circle cx="%.1f" cy="%.1f" r="12" fill="#4a68e0" stroke="#2b3f96" stroke-width="2"/><rect x="%.1f" y="%.1f" width="24" height="3.2" fill="#2b3f96"/></g>' % (a, x, y, x, y, x - 12, y - 1.6))
+    p.append('<path id="mveng" d="M212 500 A288 288 0 0 1 788 500" fill="none"/>')
+    p.append('<text fill="#98a2b0" font-family="Space Mono, monospace" font-size="25" letter-spacing="7"><textPath href="#mveng" startOffset="50%" text-anchor="middle">MUSSEJUSSE &#183; CALIBRE MJ-01 &#183; SWISS-ISH</textPath></text>')
+    p.append('<text x="500" y="905" text-anchor="middle" fill="#727b88" font-family="Space Mono, monospace" font-size="24" letter-spacing="6">No. 0001 / 17 JEWELS</text>')
+    p.append("</svg>")
+    return "".join(p)
+
+
+MOVEMENT = _movement()
+
+
+def _sector_dial():
+    p = ['<svg viewBox="0 0 1000 1000" class="sec-svg" role="img" aria-label="Vintage sector dial with small seconds and date">']
+    p.append('<defs><radialGradient id="patina" cx="40%" cy="32%"><stop offset="0" stop-color="#f4eee0"/><stop offset="55%" stop-color="#e8e0cd"/><stop offset="100%" stop-color="#d5cbb3"/></radialGradient>')
+    p.append('<filter id="lumeglow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>')
+    p.append('<circle cx="500" cy="500" r="500" fill="url(#patina)"/>')
+    p.append('<circle cx="500" cy="500" r="498" fill="none" stroke="#c7bca1" stroke-width="4"/>')
+    p.append('<circle cx="500" cy="500" r="455" fill="none" stroke="#1c1915" stroke-width="2.5"/>')
+    p.append('<circle cx="500" cy="500" r="410" fill="none" stroke="#1c1915" stroke-width="2.5"/>')
+    for i in range(60):
+        a = i * 6
+        long = i % 5 == 0
+        x1, y1 = _polar(500, 500, 410, a)
+        x2, y2 = _polar(500, 500, 441 if long else 428, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#1c1915" stroke-width="%.1f"/>' % (x1, y1, x2, y2, 3.2 if long else 1.3))
+    for i in range(12):
+        if i % 3 == 0:
+            continue
+        a = i * 30
+        x1, y1 = _polar(500, 500, 330, a)
+        x2, y2 = _polar(500, 500, 372, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#1c1915" stroke-width="6"/>' % (x1, y1, x2, y2))
+    for n, a in [(12, 0), (6, 180), (9, 270)]:
+        x, y = _polar(500, 500, 352, a)
+        p.append('<text x="%.1f" y="%.1f" text-anchor="middle" dominant-baseline="central" font-family="DM Serif Display, serif" font-size="76" fill="#1c1915">%d</text>' % (x, y + 3, n))
+    for a in (0, 120, 240):
+        x1, y1 = _polar(500, 500, 252, a)
+        x2, y2 = _polar(500, 500, 322, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#1c1915" stroke-width="2.5"/>' % (x1, y1, x2, y2))
+    p.append('<circle cx="500" cy="500" r="252" fill="none" stroke="#1c1915" stroke-width="2.5"/>')
+    p.append('<text x="500" y="322" text-anchor="middle" font-family="DM Serif Display, serif" font-size="58" fill="#1c1915">MusseJusse</text>')
+    p.append('<text x="500" y="360" text-anchor="middle" font-family="Space Mono, monospace" font-size="20" letter-spacing="6" fill="#5a5140">SUR LE WEB</text>')
+    p.append('<text x="500" y="575" text-anchor="middle" font-family="Space Mono, monospace" font-size="20" letter-spacing="6" fill="#5a5140">AUTOMATIC</text>')
+    p.append('<text x="500" y="946" text-anchor="middle" font-family="Space Mono, monospace" font-size="18" letter-spacing="7" fill="#5a5140">WEB MADE</text>')
+    p.append('<polygon points="486,58 514,58 500,100" fill="#bfe9c2" filter="url(#lumeglow)"/>')
+    p.append('<circle cx="500" cy="720" r="118" fill="none" stroke="#1c1915" stroke-width="2.5"/>')
+    p.append('<circle cx="500" cy="720" r="104" fill="none" stroke="#1c1915" stroke-width="1"/>')
+    for i in range(12):
+        a = i * 30
+        x1, y1 = _polar(500, 720, 104, a)
+        x2, y2 = _polar(500, 720, 116, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#1c1915" stroke-width="2"/>' % (x1, y1, x2, y2))
+    p.append(_hand(500, 720, 90, 225, 5, "#2b3a8f", 0.2))
+    p.append('<circle cx="500" cy="720" r="6" fill="#1c1915"/>')
+    p.append('<rect x="790" y="452" width="124" height="96" rx="10" fill="#f4eee0" stroke="#1c1915" stroke-width="3"/>')
+    p.append('<text x="852" y="524" text-anchor="middle" font-family="DM Serif Display, serif" font-size="72" fill="#1c1915">26</text>')
+    p.append('<text x="852" y="590" text-anchor="middle" font-family="Space Mono, monospace" font-size="17" letter-spacing="4" fill="#5a5140">DATE</text>')
+    p.append(_hand(500, 500, 392, 60, 16, "#2b3a8f", 0.14))
+    p.append(_hand(500, 500, 268, 305, 20, "#2b3a8f", 0.16))
+    p.append('<circle cx="500" cy="500" r="16" fill="#1c1915"/><circle cx="500" cy="500" r="7" fill="#c9a24a"/>')
+    p.append("</svg>")
+    return "".join(p)
+
+
+SECTOR = _sector_dial()
+
+
+def _tachy_dial():
+    p = ['<svg viewBox="0 0 1000 1000" class="tach-svg" role="img" aria-label="Panda chronograph dial with tachymeter bezel">']
+    p.append('<circle cx="500" cy="500" r="500" fill="#141414"/>')
+    p.append('<circle cx="500" cy="500" r="472" fill="none" stroke="#3a3a3a" stroke-width="2"/>')
+    p.append('<circle cx="500" cy="500" r="440" fill="none" stroke="#3a3a3a" stroke-width="2"/>')
+    vals = [400, 350, 300, 250, 200, 175, 150, 125, 100, 80, 60]
+    for i, v in enumerate(vals):
+        a = -105 + i * (210 / (len(vals) - 1))
+        x1, y1 = _polar(500, 500, 440, a)
+        x2, y2 = _polar(500, 500, 456, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#e8e8e8" stroke-width="2"/>' % (x1, y1, x2, y2))
+        xt, yt = _polar(500, 500, 412, a)
+        p.append('<text x="%.1f" y="%.1f" text-anchor="middle" dominant-baseline="central" font-family="Space Mono, monospace" font-size="26" fill="#e8e8e8">%d</text>' % (xt, yt, v))
+    p.append('<circle cx="500" cy="500" r="400" fill="#f4f1ea"/>')
+    p.append('<circle cx="500" cy="500" r="400" fill="none" stroke="#141414" stroke-width="2"/>')
+    for i in range(60):
+        a = i * 6
+        long = i % 5 == 0
+        x1, y1 = _polar(500, 500, 352, a)
+        x2, y2 = _polar(500, 500, 392 if long else 375, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#141414" stroke-width="%.1f"/>' % (x1, y1, x2, y2, 4 if long else 1.4))
+    for sx, sy in [(320, 500), (680, 500)]:
+        r = 120
+        p.append('<circle cx="%d" cy="%d" r="%d" fill="#141414"/>' % (sx, sy, r))
+        p.append('<circle cx="%d" cy="%d" r="%d" fill="none" stroke="#555" stroke-width="2"/>' % (sx, sy, r - 10))
+        for i in range(12):
+            a = i * 30
+            x1, y1 = _polar(sx, sy, r - 16, a)
+            x2, y2 = _polar(sx, sy, r - 6, a)
+            p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#e8e8e8" stroke-width="1.8"/>' % (x1, y1, x2, y2))
+        hx, hy = _polar(sx, sy, r - 26, 45)
+        p.append('<line x1="%d" y1="%d" x2="%.1f" y2="%.1f" stroke="#e05555" stroke-width="3"/>' % (sx, sy, hx, hy))
+        p.append('<circle cx="%d" cy="%d" r="6" fill="#e8e8e8"/>' % (sx, sy))
+    p.append('<circle cx="500" cy="718" r="64" fill="#141414"/>')
+    p.append('<circle cx="500" cy="718" r="56" fill="none" stroke="#555" stroke-width="1.6"/>')
+    for i in range(12):
+        a = i * 30
+        x1, y1 = _polar(500, 718, 48, a)
+        x2, y2 = _polar(500, 718, 56, a)
+        p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#e8e8e8" stroke-width="1.6"/>' % (x1, y1, x2, y2))
+    hx, hy = _polar(500, 718, 44, 140)
+    p.append('<line x1="500" y1="718" x2="%.1f" y2="%.1f" stroke="#e8e8e8" stroke-width="2.4"/>' % (hx, hy))
+    p.append('<text x="500" y="286" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="46" letter-spacing="10" fill="#141414">MUSSEJUSSE</text>')
+    p.append('<text x="500" y="322" text-anchor="middle" font-family="Space Mono, monospace" font-size="19" letter-spacing="6" fill="#141414">AUTOMATIC CHRONOGRAPH</text>')
+    p.append('<text x="500" y="906" text-anchor="middle" font-family="Space Mono, monospace" font-size="18" letter-spacing="7" fill="#141414">WEB MADE</text>')
+    p.append('<rect x="846" y="620" width="104" height="78" rx="8" fill="#f4f1ea" stroke="#141414" stroke-width="2.5"/>')
+    p.append('<text x="898" y="680" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="52" fill="#141414">26</text>')
+    p.append(_hand(500, 500, 318, 60, 17, "#141414", 0.14))
+    p.append(_hand(500, 500, 216, 305, 21, "#141414", 0.16))
+    p.append(_hand(500, 500, 346, 0, 7, "#d13b2e", 0.24))
+    p.append('<circle cx="500" cy="500" r="15" fill="#141414"/><circle cx="500" cy="500" r="6" fill="#d13b2e"/>')
+    p.append("</svg>")
+    return "".join(p)
+
+
+TACH = _tachy_dial()
+
+# ---------------------------------------------------------------- F / G / H styles
+
+WATCH_CSS = """
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes tick{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
+.spin{transform-box:view-box;transform-origin:var(--ox) var(--oy);animation:spin var(--d,8s) linear infinite}
+.balance{transform-box:view-box;transform-origin:var(--ox) var(--oy);animation:tick 1.1s ease-in-out infinite}
+.hair{filter:drop-shadow(0 0 3px rgba(74,104,224,.65))}
+/* F: exhibition caseback */
+.mv{background:radial-gradient(120% 100% at 72% 40%,#1a1e25,#0c0e12 72%);color:#d7dce2;padding:3.4cqw 4cqw;overflow:hidden}
+.mv:before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1.5px);background-size:2.4cqw 2.4cqw;opacity:.7}
+.mv-caseback{position:absolute;right:1.5cqw;top:50%;transform:translateY(-50%);width:63cqw;height:63cqw;border-radius:50%;overflow:hidden;box-shadow:0 0 0 .5cqw #08090c,0 0 0 .72cqw #39414d,0 2.4cqw 6cqw rgba(0,0,0,.65)}
+.mv-caseback:after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 7cqw rgba(0,0,0,.7),inset 1.2cqw 1.4cqw 3cqw rgba(255,255,255,.1);z-index:2}
+.mv-svg{width:100%;height:100%;display:block}
+.mv-left{position:relative;z-index:3;width:33cqw}
+.mv-brand{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:2.5cqw;letter-spacing:.32em;color:#cfd5de;text-shadow:0 1px 0 rgba(0,0,0,.85),0 -1px 0 rgba(255,255,255,.16)}
+.mv-sub{font-family:"Space Mono",monospace;font-size:.76cqw;letter-spacing:.22em;color:#7f8896;margin-top:.8cqw}
+.mv h1{font-size:4.5cqw;line-height:1.03;letter-spacing:-.02em;margin-top:2.8cqw;font-weight:600}
+.mv h1 em{font-style:normal;color:#c9a24a}
+.mv p{font-size:1cqw;color:#96a0ae;margin-top:1.5cqw;max-width:30cqw;line-height:1.55}
+.mv-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4cqw;margin-top:2.6cqw;border-top:1px solid #2a303a;border-bottom:1px solid #2a303a;padding:1.3cqw 0}
+.mv-specs span{display:block;font-family:"Space Mono",monospace;font-size:.62cqw;letter-spacing:.16em;color:#7f8896}
+.mv-specs b{display:block;font-family:"Space Mono",monospace;font-weight:400;font-size:1cqw;color:#d7dce2;margin-top:.35cqw}
+.mv-comp{margin-top:2.6cqw;display:grid;gap:1.2cqw}
+.mv-comp a{display:grid;grid-template-columns:auto 1fr auto;gap:.9cqw;align-items:baseline;border:1px solid #2a303a;padding:1.1cqw 1.3cqw;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0))}
+.mv-comp a:hover{border-color:#c9a24a}
+.mv-comp .n{font-family:"Space Mono",monospace;font-size:.7cqw;color:#c9a24a;letter-spacing:.08em}
+.mv-comp .t{display:block;font-size:1.1cqw}
+.mv-comp .d{display:block;font-family:"Space Mono",monospace;font-size:.66cqw;color:#7f8896;letter-spacing:.06em;margin-top:.3cqw}
+.mv-comp .go{font-size:1.2cqw;color:#c9a24a}
+.mv-foot{position:absolute;left:4cqw;right:4cqw;bottom:1.8cqw;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.7cqw;color:#6b7480;z-index:3}
+.mv-crown{position:absolute;right:.5cqw;top:50%;width:1.7cqw;height:5.6cqw;transform:translateY(-50%);border-radius:.3cqw;background:repeating-linear-gradient(90deg,#3a4048 0 2px,#20242c 2px 4px);box-shadow:0 0 1.2cqw #000;z-index:4}
+.mv-crown:before{content:"";position:absolute;left:-.5cqw;top:50%;transform:translateY(-50%);width:.7cqw;height:2.6cqw;background:#20242c;border-radius:.2cqw}
+/* G: sector dial */
+.sec{background:#efe8d8;color:#1c1915;padding:3.2cqw 4cqw;overflow:hidden}
+.sec:before{content:"";position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 36%,rgba(0,0,0,.018) 0deg 1deg,transparent 1deg 2deg);opacity:.6}
+.sec-dial{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:50cqw;height:50cqw;border-radius:50%;overflow:hidden;box-shadow:0 0 0 .38cqw #b2a68c,0 1.6cqw 3.4cqw rgba(70,58,36,.28)}
+.sec-svg{width:100%;height:100%;display:block}
+.sec-top{position:absolute;top:3.2cqw;left:4cqw;right:4cqw;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.76cqw;letter-spacing:.16em;z-index:3}
+.sec-top nav{display:flex;gap:2.4cqw}
+.sec-bio{position:absolute;left:4cqw;bottom:6.4cqw;width:17cqw;z-index:3}
+.sec-bio .eyebrow{font-family:"Space Mono",monospace;font-size:.68cqw;letter-spacing:.2em;color:#96896c}
+.sec-bio p{font-size:1.02cqw;line-height:1.5;margin-top:.9cqw;color:#4a4234}
+.sec-reg{position:absolute;right:4cqw;bottom:6.4cqw;width:19cqw;display:grid;gap:1.1cqw;z-index:3}
+.sec-reg a{border-top:1px solid #1c1915;padding-top:.85cqw;display:block}
+.sec-reg a:hover{color:#9a5a1e}
+.sec-reg .mono{font-family:"Space Mono",monospace;font-size:.62cqw;letter-spacing:.14em;color:#96896c}
+.sec-reg h3{font-family:"DM Serif Display",serif;font-size:1.55cqw;margin-top:.25cqw}
+.sec-reg p{font-size:.76cqw;color:#6a6151;margin-top:.2cqw}
+.sec-foot{position:absolute;left:4cqw;right:4cqw;bottom:1.5cqw;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.66cqw;color:#96896c;z-index:3}
+/* H: chronograph */
+.tach{background:#f4f1ea;color:#141414;padding:3.2cqw 4cqw;overflow:hidden}
+.tach-dial{position:absolute;left:1.5cqw;top:50%;transform:translateY(-50%);width:57cqw;height:57cqw}
+.tach-svg{width:100%;height:100%;display:block}
+.tach-sub{position:absolute;top:50%;transform:translate(-50%,-50%);width:22%;text-align:center;color:#e8e8e8;text-decoration:none}
+.tach-sub .mono{font-family:"Space Mono",monospace;font-size:.6cqw;letter-spacing:.08em;color:#e05555}
+.tach-sub h3{font-size:1.12cqw;margin-top:.35cqw;line-height:1.12}
+.tach-sub .go{display:block;font-size:.95cqw;margin-top:.3cqw;color:#e8e8e8}
+.tach-copy{position:absolute;right:4cqw;top:50%;transform:translateY(-50%);width:34cqw;z-index:3}
+.tach-copy .eyebrow{font-family:"Space Mono",monospace;font-size:.72cqw;letter-spacing:.2em;color:#8a8378}
+.tach-copy h1{font-size:4.9cqw;line-height:1;letter-spacing:-.03em;margin-top:1.4cqw;font-weight:700;text-transform:uppercase}
+.tach-copy h1 em{font-style:normal;color:#d13b2e}
+.tach-copy p{font-size:1.02cqw;color:#57514a;margin-top:1.4cqw;max-width:30cqw;line-height:1.55}
+.tach-meta{display:grid;grid-template-columns:1fr 1fr;gap:1.2cqw 2cqw;margin-top:2.2cqw;border-top:1px solid #d8d2c6;padding-top:1.4cqw}
+.tach-meta span{font-family:"Space Mono",monospace;font-size:.62cqw;letter-spacing:.16em;color:#8a8378}
+.tach-meta b{display:block;font-family:"Space Mono",monospace;font-weight:400;font-size:.95cqw;color:#141414;margin-top:.3cqw}
+.tach-foot{position:absolute;right:4cqw;bottom:1.8cqw;font-family:"Space Mono",monospace;font-size:.68cqw;color:#8a8378;z-index:3}
+.tach-foot a{color:#141414}
+/* mobile */
+.mobile .mv{padding:6cqw}
+.mobile .mv:before{background-size:6cqw 6cqw}
+.mobile .mv-crown{right:5cqw;top:40cqw;height:11cqw;width:3cqw}
+.mobile .mv-crown:before{width:1.4cqw;height:5cqw;left:-1cqw}
+.mobile .mv-caseback{position:static;transform:none;width:86cqw;height:86cqw;margin:0 auto}
+.mobile .mv-left{width:auto;padding-top:9cqw}
+.mobile .mv-brand{font-size:4.6cqw}
+.mobile .mv-sub{font-size:1.9cqw}
+.mobile .mv h1{font-size:10.5cqw;margin-top:5cqw}
+.mobile .mv p{font-size:3.1cqw;max-width:none;margin-top:4cqw}
+.mobile .mv-specs{grid-template-columns:1fr 1fr;gap:3cqw 4cqw;padding:3cqw 0;margin-top:6cqw}
+.mobile .mv-specs span{font-size:1.7cqw}
+.mobile .mv-specs b{font-size:2.9cqw}
+.mobile .mv-comp{margin-top:6cqw;gap:3cqw}
+.mobile .mv-comp a{padding:3cqw;gap:2cqw}
+.mobile .mv-comp .n{font-size:1.9cqw}
+.mobile .mv-comp .t{font-size:3.5cqw}
+.mobile .mv-comp .d{font-size:1.9cqw}
+.mobile .mv-comp .go{font-size:3.4cqw}
+.mobile .mv-foot{position:static;margin-top:8cqw;font-size:1.9cqw;flex-direction:column;gap:1.4cqw}
+.mobile .sec{padding:6cqw}
+.mobile .sec-top{position:static;display:flex;justify-content:space-between;font-size:2.1cqw;margin-bottom:2cqw}
+.mobile .sec-dial{position:static;transform:none;width:88cqw;height:88cqw;margin:2cqw auto 0}
+.mobile .sec-bio{position:static;width:auto;margin-top:9cqw}
+.mobile .sec-bio .eyebrow{font-size:1.9cqw}
+.mobile .sec-bio p{font-size:3.3cqw;margin-top:2cqw}
+.mobile .sec-reg{position:static;width:auto;margin-top:9cqw;gap:4cqw}
+.mobile .sec-reg .mono{font-size:1.8cqw}
+.mobile .sec-reg h3{font-size:5.2cqw}
+.mobile .sec-reg p{font-size:2.8cqw}
+.mobile .sec-foot{position:static;margin-top:9cqw;font-size:1.8cqw;flex-direction:column;gap:1.4cqw}
+.mobile .tach{padding:6cqw}
+.mobile .tach-dial{position:static;transform:none;width:90cqw;height:90cqw;margin:0 auto}
+.mobile .tach-sub{width:24%}
+.mobile .tach-sub .mono{font-size:1.8cqw}
+.mobile .tach-sub h3{font-size:3.3cqw}
+.mobile .tach-sub .go{font-size:3cqw}
+.mobile .tach-copy{position:static;transform:none;width:auto;margin-top:9cqw}
+.mobile .tach-copy .eyebrow{font-size:2cqw}
+.mobile .tach-copy h1{font-size:11cqw;margin-top:3cqw}
+.mobile .tach-copy p{font-size:3.2cqw;max-width:none;margin-top:4cqw}
+.mobile .tach-meta{margin-top:6cqw;gap:3cqw 4cqw;padding-top:3cqw}
+.mobile .tach-meta span{font-size:1.7cqw}
+.mobile .tach-meta b{font-size:2.9cqw}
+.mobile .tach-foot{position:static;margin-top:8cqw;font-size:1.9cqw}
+"""
+
+MOVEMENT_DIR = (
+    '<div class="site mv">'
+    '<div class="mv-caseback" aria-hidden="true">' + MOVEMENT + "</div>"
+    '<span class="mv-crown" aria-hidden="true"></span>'
+    '<div class="mv-left">'
+    '<div class="mv-brand">MUSSEJUSSE</div>'
+    '<div class="mv-sub">CALIBRE MJ-01 / No. 0001</div>'
+    "<h1>Always building.<br><em>Never finished.</em></h1>"
+    "<p>I'm Musse. By day I build for the web, by night I take movements apart and occasionally get them back together. This is the running log.</p>"
+    '<div class="mv-specs">'
+    "<span>JEWELS<b>17</b></span><span>FREQUENCY<b>4 Hz</b></span>"
+    "<span>RESERVE<b>38 H</b></span><span>WATER<b>100 M</b></span>"
+    "</div>"
+    '<div class="mv-comp">'
+    '<a href="' + R + '" target="_blank" rel="noopener noreferrer"><span class="n">01</span>'
+    '<span><span class="t">Roundest Pok&eacute;mon</span><span class="d">MOONPHASE COMPLICATION</span></span><span class="go">&#8599;</span></a>'
+    '<a href="' + M + '" target="_blank" rel="noopener noreferrer"><span class="n">02</span>'
+    '<span><span class="t">Models</span><span class="d">ANNUAL CALENDAR COMPLICATION</span></span><span class="go">&#8599;</span></a>'
+    "</div></div>"
+    '<footer class="mv-foot"><span>SAPPHIRE CASE BACK / SERVICED 2026</span><span>' + GH_LINK + " &middot; " + BS_LINK + "</span></footer>"
+    "</div>"
+)
+
+SECTOR_DIR = (
+    '<div class="site sec">'
+    '<header class="sec-top"><span>MUSSEJUSSE / GEN&Egrave;VE</span><nav>' + GH_LINK + " " + BS_LINK + "</nav></header>"
+    '<div class="sec-dial" aria-hidden="true">' + SECTOR + "</div>"
+    '<div class="sec-bio"><span class="eyebrow">REF. MJ-02 / SECTOR</span>'
+    "<p>I collect old watches and build small sites. Both reward patience and a steady hand.</p></div>"
+    '<section class="sec-reg">'
+    '<a href="' + R + '" target="_blank" rel="noopener noreferrer"><span class="mono">01 / SMALL SECONDS</span>'
+    "<h3>Roundest Pok&eacute;mon</h3><p>Which one is rounder?</p></a>"
+    '<a href="' + M + '" target="_blank" rel="noopener noreferrer"><span class="mono">02 / DATE</span>'
+    "<h3>Models</h3><p>The model catalogue, pared back.</p></a>"
+    "</section>"
+    '<footer class="sec-foot"><span>SWISS-ISH MOVEMENT / WEB MADE</span><span>A work in progress</span></footer>'
+    "</div>"
+)
+
+TACH_DIR = (
+    '<div class="site tach">'
+    '<div class="tach-dial">' + TACH
+    + '<a class="tach-sub" style="left:32%" href="' + R + '" target="_blank" rel="noopener noreferrer">'
+    '<span class="mono">COMPLICATION 01</span><h3>Roundest<br>Pok&eacute;mon</h3><span class="go">&#8599;</span></a>'
+    + '<a class="tach-sub" style="left:68%" href="' + M + '" target="_blank" rel="noopener noreferrer">'
+    '<span class="mono">COMPLICATION 02</span><h3>Models</h3><span class="go">&#8599;</span></a>'
+    + "</div>"
+    '<div class="tach-copy"><span class="eyebrow">REF. MJ-03 / CHRONOGRAPH</span>'
+    "<h1>Built to be<br>worn. <em>Wound<br>daily.</em></h1>"
+    "<p>Two complications, no compromises. A roundness question and a model catalogue, timed to the second.</p>"
+    '<div class="tach-meta">'
+    "<span>PUSHERS<b>2</b></span><span>TACHYMETER<b>60-400</b></span>"
+    "<span>CASE<b>STEEL</b></span><span>CRYSTAL<b>SAPPHIRE</b></span>"
+    "</div></div>"
+    '<footer class="tach-foot"><a href="' + GH + '" target="_blank" rel="noopener noreferrer">GitHub</a> &middot; <a href="' + BS + '" target="_blank" rel="noopener noreferrer">Bluesky</a></footer>'
+    "</div>"
+)
+
 # ---------------------------------------------------------------- review chrome
 
 CHROME_CSS = """
@@ -614,6 +993,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Space Grotes
 .intro h2 em{font-family:"DM Serif Display",Georgia,serif;font-style:italic;font-weight:400}
 .intro p{color:var(--dim);margin-top:18px;font-size:15.5px}
 .direction{padding-top:76px;scroll-margin-top:70px}
+.revdivider{margin-top:96px;padding-top:22px;border-top:1px solid var(--line);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.26em;color:var(--dim)}
 .dhead{display:grid;grid-template-columns:auto 1fr;gap:8px 28px;align-items:baseline;border-top:1px solid var(--line);padding-top:20px}
 .dhead .letter{font-family:"Space Mono",monospace;font-size:12px;color:var(--dim);letter-spacing:.1em;grid-row:1 / span 2}
 .dhead h2{font-size:clamp(24px,3vw,38px);font-weight:500;letter-spacing:-.025em}
@@ -622,8 +1002,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Space Grotes
 .view{min-width:0}
 .vlabel{display:flex;justify-content:space-between;gap:12px;font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
 .vlabel b{color:var(--ink);font-weight:400}
-.rfoot{margin-top:96px;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--dim);font-size:13px}
-.rfoot a{color:var(--ink)}
+.rfoot{margin-top:96px;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--dim);font-size:13px}.rfoot a{color:var(--ink)}
 @media(max-width:1180px){
   .views{grid-template-columns:minmax(0,1fr)}
   .view.mobile{width:min(100%,390px)}
@@ -638,6 +1017,9 @@ DIRECTIONS = [
     ("C", "Blueprint", "An engineering drawing with dimension callouts, detail frames and a title block that signs the work.", BP),
     ("D", "Tide", "A descent from surface light to the abyss, with a depth gauge and two glass specimens.", TIDE),
     ("E", "Terminal", "An amber phosphor terminal: ASCII wordmark, a live process table and a signal meter.", TERM),
+    ("F", "Mouvement", "The exhibition caseback: perlage, Geneva stripes, a gear train and a balance wheel that keeps ticking.", MOVEMENT_DIR),
+    ("G", "Secteur", "A vintage sector dial with railroad tracks, a small seconds and a date window, printed on aged parchment.", SECTOR_DIR),
+    ("H", "Chronographe", "A panda chronograph: tachymeter bezel, two black complication subdials and a red sweeping chrono hand.", TACH_DIR),
 ]
 
 
@@ -647,8 +1029,12 @@ def section(letter, title, desc, markup):
         '<div class="canvas">%s</div></div>' % (kind, kind.capitalize(), size, markup)
         for kind, size in [("desktop", "1440 &times; 1000"), ("mobile", "390 &times; 844")]
     )
+    prefix = ""
+    if letter == "F":
+        prefix = '<div class="revdivider"><span>WATCH STUDIES / HOROLOGY AS A THEME</span></div>'
     return (
-        '<section class="direction" id="%s">'
+        prefix
+        + '<section class="direction" id="%s">'
         '<header class="dhead"><span class="letter">%s</span><h2>%s / %s</h2><p>%s</p></header>'
         '<div class="views">%s</div></section>'
     ) % (letter, letter, letter, title, desc, views)
@@ -661,17 +1047,17 @@ def build():
         '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         "<title>MusseJusse / Redesign directions</title>"
-        "<style>" + FONT_CSS + STAGE_CSS + CHROME_CSS + OBS_CSS + RISO_CSS + BP_CSS + TIDE_CSS + TERM_CSS + "</style>"
+        "<style>" + FONT_CSS + STAGE_CSS + CHROME_CSS + WATCH_CSS + OBS_CSS + RISO_CSS + BP_CSS + TIDE_CSS + TERM_CSS + "</style>"
         "</head><body>"
         '<div class="rtop"><div class="row"><h1>MusseJusse / redesign directions</h1>'
-        "<span>five directions &middot; desktop + mobile</span>"
+        "<span>eight directions &middot; desktop + mobile</span>"
         '<nav class="rnav" aria-label="Directions">' + nav + "</nav></div></div>"
         '<div class="wrap">'
-        '<header class="intro"><span class="k">FULL UI REDESIGN / ROUND ONE</span>'
-        "<h2>Five ways this site could feel. Each one is a working page, not a picture, so resize the window and it holds up.</h2>"
+        '<header class="intro"><span class="k">FULL UI REDESIGN / ROUND TWO</span>'
+        "<h2>Eight ways this site could feel. Five general directions, plus three watch studies for the horology theme. Each one is a working page, not a picture, so resize the window and it holds up.</h2>"
         "<p>Every direction is built from the same content: MusseJusse, two experiments, two links. The differences are all voice. Pick one, or mix the parts you like, and I will build it for real.</p></header>"
         + sections
-        + '<footer class="rfoot"><span>Five directions, rendered live in the browser with embedded typefaces.</span>'
+        + '<footer class="rfoot"><span>Eight directions, rendered live in the browser with embedded typefaces.</span>'
         "<span>" + a(GH, "GitHub", "") + " &middot; " + a(BS, "Bluesky", "") + "</span></footer>"
         "</div></body></html>"
     )
