@@ -29,6 +29,7 @@ FONT_CSS = "".join(
         font("DM Serif Display", "DMSerif-Regular.woff2", "400"),
         font("DM Serif Display", "DMSerif-Italic.woff2", "400", "italic"),
         font("Anton", "Anton.woff2", "400"),
+        font("Inter", "Inter.woff2", "100 900"),
     ]
 )
 
@@ -40,7 +41,7 @@ M = "https://models.mussejusse.com"
 
 def a(url, inner, cls=""):
     c = ' class="%s"' % cls if cls else ""
-    return '<a%s href="%s" target="_blank" rel="noopener noreferrer">%s</a>' % (c, url, inner)
+    return '<a%s href="%s">%s</a>' % (c, url, inner)
 
 
 GH_LINK = a(GH, "GitHub", "mono")
@@ -1011,15 +1012,661 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Space Grotes
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 """
 
+# ================================================================ round two
+# B (Riso) is kept. Everything below replaces the other seven directions.
+
+SPEC_CSS = """
+.spc{background:#f3f1ea;color:#141414;padding:3cqw 4cqw;overflow:hidden;--wght:430;--ls:-.02em}
+.spc .base{position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,transparent 0 4.4cqw,rgba(20,20,20,.05) 4.4cqw 4.47cqw)}
+.spc-top{position:relative;z-index:4;display:flex;justify-content:space-between;align-items:baseline;font-family:"Space Mono",monospace;font-size:.76cqw;letter-spacing:.14em}
+.spc-top nav{display:flex;gap:2.4cqw}
+.spc .lead{position:absolute;left:4cqw;top:8.8cqw;z-index:4;font-family:"Space Mono",monospace;font-size:.72cqw;letter-spacing:.2em;color:#2b2bff}
+.spc-word{position:absolute;left:3.6cqw;top:12cqw;z-index:2;font-family:"Inter",sans-serif;font-weight:400;font-variation-settings:'wght' var(--wght);font-size:18.6cqw;line-height:.82;letter-spacing:var(--ls);text-transform:uppercase}
+.spc-word span{display:block}
+.spc-read{position:absolute;right:4cqw;top:13cqw;z-index:4;font-family:"Space Mono",monospace;font-size:.74cqw;line-height:2;text-align:right;color:#5c5c56}
+.spc-read b{color:#2b2bff;font-weight:400}
+.spc-glyphs{position:absolute;left:4cqw;top:45cqw;width:52cqw;z-index:4;font-family:"Inter",sans-serif;font-variation-settings:'wght' var(--wght);font-size:.92cqw;line-height:1.6;letter-spacing:.02em;color:#3a3a36}
+.spc-work{position:absolute;left:4cqw;right:4cqw;bottom:5.2cqw;display:grid;grid-template-columns:1fr 1fr;gap:3cqw;border-top:1.3px solid #141414;padding-top:1.5cqw;z-index:4}
+.spc-work a{display:grid;grid-template-columns:auto 1fr;gap:1.4cqw;align-items:center}
+.spc-work .g{font-family:"Inter",sans-serif;font-variation-settings:'wght' var(--wght);font-size:5.6cqw;line-height:.85}
+.spc-work h3{font-size:1.5cqw;letter-spacing:-.01em}
+.spc-work .mono{font-family:"Space Mono",monospace;font-size:.7cqw;color:#6b6b64;margin-top:.5cqw;letter-spacing:.06em}
+.spc-foot{position:absolute;left:4cqw;right:4cqw;bottom:1.5cqw;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.7cqw;color:#8a8a82;z-index:4}
+.mobile .spc{padding:6cqw}
+.mobile .spc .base{display:none}
+.mobile .spc-top{font-size:2.1cqw}
+.mobile .spc-top nav{gap:5cqw}
+.mobile .spc .lead{position:static;font-size:1.9cqw;margin-top:2cqw}
+.mobile .spc-word{position:static;font-size:23cqw;margin-top:6cqw}
+.mobile .spc-read{position:static;text-align:left;font-size:2cqw;margin-top:7cqw}
+.mobile .spc-glyphs{position:static;width:auto;font-size:2.6cqw;margin-top:6cqw}
+.mobile .spc-work{position:static;grid-template-columns:1fr;gap:6cqw;margin-top:9cqw;padding-top:4cqw;border-top-width:2px}
+.mobile .spc-work .g{font-size:13cqw}
+.mobile .spc-work h3{font-size:4.6cqw}
+.mobile .spc-work .mono{font-size:1.9cqw}
+.mobile .spc-foot{position:static;margin-top:9cqw;font-size:1.9cqw}
+"""
+
+VIT_CSS = """
+.vit{background:#0c0b0a;color:#efe7d8;overflow:hidden;perspective:1700px;padding:3cqw 4cqw}
+.vit-scene{position:absolute;inset:-8% -6%;transform-style:preserve-3d;transform:rotateX(var(--rx,3deg)) rotateY(var(--ry,-7deg))}
+.vit-wall{position:absolute;inset:0;transform:translateZ(-48cqw);background:linear-gradient(180deg,#322a23,#161210 80%);box-shadow:inset 0 0 24cqw rgba(0,0,0,.7)}
+.vit-floor{position:absolute;left:-40%;right:-40%;bottom:-8%;height:80%;transform:rotateX(75deg);transform-origin:bottom center;background:linear-gradient(#241f19,#0a0908 72%)}
+.vit-pool{position:absolute;left:15%;top:14%;width:24cqw;height:32cqw;transform:translateZ(-47.4cqw);background:radial-gradient(closest-side,rgba(255,214,160,.4),transparent);filter:blur(1.2cqw)}
+.vit-pool.two{left:49%}
+.vit-work{position:absolute;width:22cqw;transform:translateZ(-44cqw)}
+.vit-work.one{left:16%}
+.vit-work.two{left:51%}
+.vit-frame{border:.7cqw solid #4a3a2c;background:#080706;padding:.7cqw;box-shadow:0 2.6cqw 5cqw rgba(0,0,0,.7);position:relative}
+.vit-canvas{aspect-ratio:4/5;position:relative;overflow:hidden}
+.vit-canvas.blue{background:radial-gradient(circle at 50% 44%,#0d1c3e,#050a18)}
+.vit-canvas.blue:before{content:"";position:absolute;left:50%;top:44%;width:12cqw;height:12cqw;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff,#9db4e8 46%,#3a4f8a);box-shadow:0 0 3cqw rgba(200,220,255,.65)}
+.vit-canvas.blue:after{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at 50% 44%,transparent 0 1.3cqw,rgba(160,190,255,.22) 1.3cqw 1.42cqw)}
+.vit-canvas.ochre{background:linear-gradient(160deg,#3b2d18,#1b1308)}
+.vit-canvas.ochre:before{content:"";position:absolute;inset:12% 14%;background-image:linear-gradient(rgba(255,209,130,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(255,209,130,.55) 1px,transparent 1px);background-size:2.3cqw 2.3cqw}
+.vit-plaque{margin-top:1.1cqw;background:#e9e0cf;color:#15110d;padding:.9cqw 1cqw;font-family:"Space Mono",monospace}
+.vit-plaque h3{font-size:1.05cqw;letter-spacing:.01em}
+.vit-plaque p{font-size:.66cqw;color:#5a5145;margin-top:.35cqw;line-height:1.45}
+.vit-plaque a{color:#0b3fa8}
+.vit-light{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(46cqw 38cqw at var(--mx,62%) var(--my,24%),rgba(255,216,164,.2),transparent 62%)}
+.vit-top{position:absolute;top:3cqw;left:4cqw;right:4cqw;z-index:5;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.74cqw;letter-spacing:.14em;color:#cbbfa8}
+.vit-top nav{display:flex;gap:2.4cqw}
+.vit-guide{position:absolute;left:4cqw;bottom:4cqw;z-index:5;width:27cqw;background:rgba(10,9,8,.72);border:1px solid rgba(220,205,180,.24);padding:1.6cqw;backdrop-filter:blur(6px)}
+.vit-guide .mono{font-family:"Space Mono",monospace;font-size:.64cqw;letter-spacing:.2em;color:#9c8f78}
+.vit-guide h1{font-family:"DM Serif Display",serif;font-size:2.7cqw;line-height:1.02;margin-top:.8cqw}
+.vit-guide p{font-size:.82cqw;color:#cbbfa8;margin-top:.9cqw;line-height:1.5}
+.vit-guide .list{margin-top:1.3cqw;border-top:1px solid rgba(220,205,180,.2);padding-top:1cqw;display:grid;gap:.7cqw}
+.vit-guide .list span{font-size:.74cqw;display:flex;justify-content:space-between;color:#cbbfa8;font-family:"Space Mono",monospace}
+.mobile .vit{padding:0;perspective:none}
+.mobile .vit-scene{position:static;inset:0;transform:none}
+.mobile .vit-wall,.mobile .vit-floor,.mobile .vit-pool,.mobile .vit-light{display:none}
+.mobile .vit-top{position:static;padding:6cqw 6cqw 0;font-size:2cqw;color:#cbbfa8}
+.mobile .vit-work{position:static;width:auto;transform:none;margin:9cqw 6cqw 0}
+.mobile .vit-frame{border-width:1.4cqw;padding:1.4cqw}
+.mobile .vit-canvas.blue:before{width:36cqw;height:36cqw}
+.mobile .vit-canvas.ochre:before{background-size:6cqw 6cqw}
+.mobile .vit-plaque{margin-top:2.4cqw;padding:2.6cqw}
+.mobile .vit-plaque h3{font-size:3.8cqw}
+.mobile .vit-plaque p{font-size:2.3cqw}
+.mobile .vit-guide{position:static;width:auto;margin:9cqw 6cqw 0;padding:5cqw}
+.mobile .vit-guide .mono{font-size:1.7cqw}
+.mobile .vit-guide h1{font-size:7.4cqw}
+.mobile .vit-guide p{font-size:2.9cqw}
+.mobile .vit-guide .list span{font-size:2.1cqw}
+"""
+
+FOIL_CSS = """
+.foil{background:radial-gradient(130% 100% at 50% -8%,#23264a,#0a0b14 68%);color:#f4f1ea;padding:3cqw 4cqw;overflow:hidden}
+.foil-top{position:relative;z-index:4;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.74cqw;letter-spacing:.16em;color:#a9a6c9}
+.foil-top nav{display:flex;gap:2.4cqw}
+.foil-title{position:absolute;left:0;right:0;bottom:4cqw;text-align:center;font-family:"Anton",sans-serif;font-size:3.4cqw;letter-spacing:.02em;text-transform:uppercase;color:rgba(244,241,234,.5);z-index:3}
+.foil-deck{position:absolute;left:0;right:0;top:11.5cqw;display:flex;justify-content:center;gap:4.4cqw;perspective:1500px}
+.foil .card{width:33cqw;aspect-ratio:.716;position:relative;border-radius:1.8cqw;padding:1.3cqw;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) rotate(var(--rot,0deg));box-shadow:0 3cqw 6cqw rgba(0,0,0,.55);will-change:transform}
+.foil .card.pink{--rot:-1.8deg;background:linear-gradient(150deg,#f7cddb,#e88aa8 52%,#c35a83)}
+.foil .card.blue{--rot:1.6deg;background:linear-gradient(150deg,#c3d4f4,#7fa3e0 52%,#4a6fbd)}
+.foil .inner{position:absolute;inset:1.1cqw;border-radius:1.2cqw;background:#0e0f17;overflow:hidden;padding:1.2cqw;display:flex;flex-direction:column}
+.foil .hbar{display:flex;justify-content:space-between;align-items:baseline}
+.foil .hbar h3{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.55cqw;letter-spacing:.01em;text-transform:uppercase}
+.foil .hp{font-family:"Space Mono",monospace;font-size:1.05cqw;color:#ffd166}
+.foil .art{flex:1;margin:1cqw 0;border-radius:.8cqw;position:relative;overflow:hidden}
+.foil .art.orb{background:radial-gradient(circle at 40% 32%,#4b5bd6,#161c3f 72%)}
+.foil .art.orb:before{content:"";position:absolute;left:50%;top:54%;width:11cqw;height:11cqw;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff,#cdd6ff 46%,#7f8fe0);box-shadow:0 0 2cqw rgba(200,215,255,.7)}
+.foil .art.orb:after{content:"";position:absolute;left:50%;top:50%;width:1.4cqw;height:1.4cqw;margin:-.7cqw;border-radius:50%;background:#0b0d18;box-shadow:2.4cqw 0 0 #0b0d18}
+.foil .art.grid{background:linear-gradient(160deg,#2a3550,#101625)}
+.foil .art.grid:before{content:"";position:absolute;inset:16%;background-image:linear-gradient(rgba(150,180,240,.65) 1px,transparent 1px),linear-gradient(90deg,rgba(150,180,240,.65) 1px,transparent 1px);background-size:1.6cqw 1.6cqw}
+.foil .art.grid:after{content:"";position:absolute;left:22%;top:30%;width:26%;height:40%;background:rgba(150,180,240,.85);box-shadow:3.4cqw 0 0 rgba(150,180,240,.5),6.8cqw 0 0 rgba(150,180,240,.3)}
+.foil .type{font-family:"Space Mono",monospace;font-size:.7cqw;letter-spacing:.1em;color:#a9a6c9}
+.foil .moves{margin-top:.8cqw;display:grid;gap:.55cqw}
+.foil .move{font-size:.8cqw;color:#ded9f0;display:grid;grid-template-columns:auto 1fr;gap:.7cqw;line-height:1.35}
+.foil .move b{font-family:"Space Mono",monospace;font-size:.68cqw;color:#ffd166}
+.foil .foot{margin-top:auto;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.64cqw;color:#8b88ad;padding-top:.7cqw}
+.foil .holo{position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:color-dodge;opacity:.42;background:conic-gradient(from 210deg at var(--mx,50%) var(--my,50%),#ff9ad5,#ffe38a,#8affd0,#8ab6ff,#c98aff,#ff9ad5)}
+.foil .glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(28cqw 22cqw at var(--mx,50%) var(--my,40%),rgba(255,255,255,.4),transparent 60%)}
+.mobile .foil{padding:6cqw}
+.mobile .foil-top{font-size:2cqw}
+.mobile .foil-deck{position:static;flex-direction:column;align-items:center;gap:8cqw;margin-top:9cqw}
+.mobile .foil .card{width:78cqw;border-radius:4cqw;padding:2.6cqw;transform:none}
+.mobile .foil .inner{inset:2.4cqw;border-radius:2.8cqw;padding:3cqw}
+.mobile .foil .hbar h3{font-size:4cqw}
+.mobile .foil .hp{font-size:2.6cqw}
+.mobile .foil .art.orb:before{width:28cqw;height:28cqw}
+.mobile .foil .art.orb:after{width:3.4cqw;height:3.4cqw;margin:-1.7cqw;box-shadow:6cqw 0 0 #0b0d18}
+.mobile .foil .art.grid:before{background-size:4cqw 4cqw}
+.mobile .foil .art.grid:after{box-shadow:8cqw 0 0 rgba(150,180,240,.5),16cqw 0 0 rgba(150,180,240,.3)}
+.mobile .foil .type{font-size:1.9cqw}
+.mobile .foil .move{font-size:2.7cqw;gap:2cqw}
+.mobile .foil .move b{font-size:1.9cqw}
+.mobile .foil .foot{font-size:1.8cqw}
+.mobile .foil-title{position:static;text-align:left;font-size:9cqw;margin-top:9cqw}
+"""
+
+LINE_CSS = """
+.line{background:#f6f4ef;color:#0f0f0f;padding:3cqw 4cqw;overflow:hidden}
+.line-top{position:relative;z-index:4;display:flex;justify-content:space-between;align-items:center;font-family:"Space Mono",monospace;font-size:.74cqw;letter-spacing:.12em}
+.line-top .brand{display:flex;align-items:center;gap:1cqw;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.5cqw;letter-spacing:-.01em}
+.line-top .brand .roundel{width:2.2cqw;height:2.2cqw;border-radius:50%;background:#e2231a;color:#fff;display:grid;place-content:center;font-family:"Space Mono",monospace;font-size:.9cqw}
+.line-top nav{display:flex;gap:2.4cqw;align-items:center}
+.line-map{position:absolute;left:4cqw;right:4cqw;top:31cqw;height:18cqw;z-index:2}
+.line-track{position:absolute;left:0;right:0;top:50%;height:.55cqw;background:#e2231a;border-radius:.3cqw}
+.line-track:after{content:"";position:absolute;left:0;right:0;top:-2.2cqw;height:.2cqw;background:repeating-linear-gradient(90deg,#0f0f0f 0 .18cqw,transparent .18cqw 1.4cqw);opacity:.22}
+.line-station{position:absolute;top:50%;transform:translate(-50%,-50%);width:2cqw;height:2cqw;border-radius:50%;background:#f6f4ef;border:.42cqw solid #e2231a;z-index:3;display:block}
+.line-station.major{width:2.8cqw;height:2.8cqw;border-width:.72cqw}
+.line-station.interchange{background:#0f0f0f;border-color:#0f0f0f;box-shadow:inset 0 0 0 .5cqw #f6f4ef}
+.line-station.s1{left:3%}.line-station.s2{left:16%}.line-station.s3{left:27%}.line-station.s4{left:39%}
+.line-station.s5{left:50%}.line-station.s6{left:63%}.line-station.s7{left:74%}.line-station.s8{left:88%}
+.line-title{position:absolute;left:4cqw;top:10.5cqw;z-index:3;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:5.6cqw;line-height:1;letter-spacing:-.03em;text-transform:uppercase;color:#0f0f0f}
+.line-station .name{position:absolute;left:50%;top:-2.5cqw;transform:translateX(-50%);white-space:nowrap;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:.92cqw;text-transform:uppercase;letter-spacing:.01em}
+.line-station.down .name{top:auto;bottom:-2.5cqw}
+.line-station .callout{position:absolute;left:50%;top:3.4cqw;transform:translate(-50%,.5cqw);opacity:0;pointer-events:none;width:15cqw;background:#fff;border:1px solid #0f0f0f;padding:1cqw;transition:opacity .18s ease-out,transform .18s ease-out;text-align:left;white-space:normal}
+.line-station.down .callout{top:auto;bottom:3.4cqw}
+.line-station:hover .callout,.line-station:focus-visible .callout{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.line-station .callout .mono{font-family:"Space Mono",monospace;font-size:.6cqw;letter-spacing:.12em;color:#e2231a;display:block}
+.line-station .callout h3{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.05cqw;margin-top:.3cqw}
+.line-station .callout p{font-size:.68cqw;color:#5a5a52;margin-top:.3cqw;line-height:1.4}
+.line-train{position:absolute;top:50%;left:3%;transform:translate(-50%,-50%);width:3.4cqw;height:1.7cqw;border-radius:.5cqw;background:#0f0f0f;box-shadow:0 0 0 .22cqw #e2231a;z-index:4;animation:ride 16s ease-in-out infinite}
+.line-train:before{content:"";position:absolute;inset:.34cqw .5cqw;background:repeating-linear-gradient(90deg,#f6f4ef 0 .34cqw,transparent .34cqw .8cqw);border-radius:.2cqw}
+.line-legend{position:absolute;left:4cqw;bottom:6cqw;width:24cqw;z-index:5;border:1px solid #0f0f0f;background:#fff;padding:1.4cqw}
+.line-legend .mono{font-family:"Space Mono",monospace;font-size:.62cqw;letter-spacing:.16em;color:#8a8a80}
+.line-legend h4{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.6cqw;margin-top:.4cqw}
+.line-legend p{font-size:.74cqw;color:#5a5a52;margin-top:.5cqw;line-height:1.45}
+.line-legend .key{margin-top:1cqw;display:grid;gap:.5cqw;font-family:"Space Mono",monospace;font-size:.66cqw;color:#4a4a44}
+.line-legend .key span{display:flex;align-items:center;gap:.7cqw}
+.line-legend .key i{width:1cqw;height:1cqw;border-radius:50%;border:.3cqw solid #e2231a;background:#f6f4ef}
+.line-legend .key i.ic{border-color:#0f0f0f;background:#0f0f0f}
+.line-foot{position:absolute;right:4cqw;bottom:6cqw;text-align:right;z-index:5;font-family:"Space Mono",monospace;font-size:.68cqw;color:#6b6b60}
+.line-foot a{display:block;color:#0f0f0f;margin-top:.4cqw}
+@keyframes ride{0%{left:3%}7%{left:16%}9%{left:16%}20%{left:27%}23%{left:27%}34%{left:39%}37%{left:39%}49%{left:50%}52%{left:50%}64%{left:63%}67%{left:63%}79%{left:74%}82%{left:74%}93%{left:88%}97%{left:88%}100%{left:3%}}
+.mobile .line{padding:6cqw}
+.mobile .line-top{font-size:2cqw}
+.mobile .line-title{position:static;font-size:11cqw;margin-top:8cqw}
+.mobile .line-top .brand{font-size:4.6cqw}
+.mobile .line-top .brand .roundel{width:6cqw;height:6cqw;font-size:2.4cqw}
+.mobile .line-map{position:relative;left:auto;right:auto;top:auto;height:auto;margin:12cqw 0 0}
+.mobile .line-track{position:absolute;left:1.4cqw;top:0;bottom:0;width:.7cqw;height:auto;border-radius:.4cqw}
+.mobile .line-track:after{display:none}
+.mobile .line-station{position:relative;left:auto;top:auto;transform:none;margin:0 0 14cqw 0;width:2.6cqw;height:2.6cqw;border-width:.5cqw}
+.mobile .line-station.major{width:3.4cqw;height:3.4cqw}
+.mobile .line-station .name{left:6cqw;top:50%;transform:translateY(-50%);bottom:auto;font-size:3.6cqw}
+.mobile .line-station.down .name{top:50%}
+.mobile .line-station .callout{left:6cqw;top:4.4cqw;bottom:auto;transform:translate(0,.4cqw);width:66cqw}
+.mobile .line-station.down .callout{top:4.4cqw;bottom:auto}
+.mobile .line-station .callout .mono{font-size:1.9cqw}
+.mobile .line-station .callout h3{font-size:3.6cqw}
+.mobile .line-station .callout p{font-size:2.4cqw}
+.mobile .line-train{left:1.4cqw;top:0;transform:translate(-50%,0);width:5cqw;height:2.6cqw;animation-name:ridev}
+.mobile .line-train:before{inset:.5cqw .7cqw}
+.mobile .line-legend{position:static;width:auto;margin-top:4cqw;padding:4cqw}
+.mobile .line-legend .mono{font-size:1.9cqw}
+.mobile .line-legend h4{font-size:5.4cqw}
+.mobile .line-legend p{font-size:2.8cqw}
+.mobile .line-legend .key{font-size:2.1cqw}
+.mobile .line-foot{position:static;text-align:left;margin-top:6cqw;font-size:2cqw}
+@keyframes ridev{0%{top:0}7%{top:14%}9%{top:14%}20%{top:28%}23%{top:28%}34%{top:42%}37%{top:42%}49%{top:56%}52%{top:56%}64%{top:70%}67%{top:70%}79%{top:84%}82%{top:84%}93%{top:96%}97%{top:96%}100%{top:0}}
+"""
+
+PATCH_CSS = """
+.patch{background:#1a1c1f;color:#e9e7e0;padding:3cqw 4cqw;overflow:hidden}
+.patch .metal{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.022) 0 2px,transparent 2px 4px);opacity:.7}
+.patch-top{position:relative;z-index:6;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.72cqw;letter-spacing:.14em;color:#9a978f}
+.patch-top nav{display:flex;gap:2.4cqw}
+.patch-rack{position:absolute;left:3.4cqw;right:3.4cqw;top:8.6cqw;bottom:7.6cqw;display:grid;grid-template-columns:repeat(4,1fr);gap:1.4cqw;z-index:3}
+.patch .module{position:relative;background:linear-gradient(180deg,#2c2f33,#1d2023);border:1px solid #0c0d0e;border-radius:.9cqw;padding:1.4cqw;display:flex;flex-direction:column;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.patch .module .strip{display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.58cqw;letter-spacing:.14em;color:#b9b6ad;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:.8cqw;margin-bottom:1cqw}
+.patch .screw{position:absolute;width:.7cqw;height:.7cqw;border-radius:50%;background:radial-gradient(#6a6f75,#33373b);box-shadow:inset 0 0 0 .12cqw #14161a}
+.patch .screw.tl{top:.6cqw;left:.6cqw}.patch .screw.tr{top:.6cqw;right:.6cqw}.patch .screw.bl{bottom:.6cqw;left:.6cqw}.patch .screw.br{bottom:.6cqw;right:.6cqw}
+.patch .knob{width:6cqw;height:6cqw;border-radius:50%;background:conic-gradient(from 0deg,#3a3f45,#22262a);box-shadow:0 0 0 .3cqw #101215,inset 0 0 1cqw rgba(0,0,0,.6);position:relative;margin:.8cqw auto;cursor:grab;touch-action:none}
+.patch .knob:before{content:"";position:absolute;left:50%;top:10%;width:.42cqw;height:2.4cqw;transform:translateX(-50%) rotate(var(--k,0deg));transform-origin:50% 200%;background:#e9e7e0;border-radius:.2cqw}
+.patch .knob:active{cursor:grabbing}
+.patch .readout{font-family:"Space Mono",monospace;font-size:.62cqw;color:#7bff9e;text-align:center;letter-spacing:.1em}
+.patch .jacks{display:flex;gap:1cqw;margin-top:auto;justify-content:center}
+.patch .jack{width:2.2cqw;height:2.2cqw;border-radius:50%;background:radial-gradient(#4a4f55,#1a1d20);box-shadow:inset 0 0 0 .3cqw #0f1113,inset 0 0 .6cqw #000}
+.patch .name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:1.15cqw;margin-top:.6cqw;text-align:center}
+.patch .name a{color:#e9e7e0}
+.patch .desc{font-size:.66cqw;color:#8f8c84;text-align:center;margin-top:.4cqw;line-height:1.4}
+.patch .ring{width:5cqw;height:5cqw;border-radius:50%;margin:1cqw auto;border:.5cqw solid #2b2f33;position:relative;box-shadow:0 0 1.6cqw rgba(123,255,158,.35)}
+.patch .ring:before{content:"";position:absolute;inset:.7cqw;border-radius:50%;background:radial-gradient(circle,#7bff9e,#2f7d52);box-shadow:0 0 1.6cqw #4bd487;animation:pulse 2.6s ease-in-out infinite}
+.patch .matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:.5cqw;margin:1.4cqw auto 0;width:80%}
+.patch .matrix i{aspect-ratio:1;border-radius:.15cqw;background:#333f47}
+.patch .matrix i.on{background:#7bff9e;box-shadow:0 0 1cqw #4bd487}
+.patch .scope{margin:.6cqw auto 0;width:90%;height:6cqw;border:1px solid rgba(123,255,158,.3);background:#0c1410;position:relative;overflow:hidden}
+.patch .scope svg{position:absolute;left:0;top:0;height:100%;width:200%;animation:scope 3.4s linear infinite}
+.patch .scope path{fill:none;stroke:#7bff9e;stroke-width:1.4}
+.patch-cables{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.patch-cables path{fill:none;stroke-linecap:round;stroke-width:1.6}
+.patch-cables .c1{stroke:#ffd23f}.patch-cables .c2{stroke:#4aa3ff}.patch-cables .c3{stroke:#ff5c8a}
+.patch-cables .flow{stroke-dasharray:5 16;animation:flow 1.6s linear infinite;stroke-width:2.4;opacity:.9}
+.patch-foot{position:absolute;left:4cqw;right:4cqw;bottom:2.4cqw;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.68cqw;color:#7f7c74;z-index:6}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1)}}
+@keyframes blip{0%,100%{opacity:.22}50%{opacity:1}}
+@keyframes flow{to{stroke-dashoffset:-21}}
+@keyframes scope{to{transform:translateX(-50%)}}
+.mobile .patch{padding:6cqw}
+.mobile .patch-top{font-size:2cqw}
+.mobile .patch-rack{position:static;margin-top:8cqw;grid-template-columns:1fr 1fr;gap:3cqw}
+.mobile .patch .module{padding:3cqw;border-radius:2cqw}
+.mobile .patch .module .strip{font-size:1.7cqw;padding-bottom:2cqw;margin-bottom:2.4cqw}
+.mobile .patch .screw{width:1.8cqw;height:1.8cqw}
+.mobile .patch .knob{width:15cqw;height:15cqw}
+.mobile .patch .knob:before{height:6cqw;width:1cqw}
+.mobile .patch .readout{font-size:1.9cqw}
+.mobile .patch .jacks{gap:2.4cqw}
+.mobile .patch .jack{width:5cqw;height:5cqw}
+.mobile .patch .name{font-size:3.1cqw}
+.mobile .patch .desc{font-size:1.9cqw}
+.mobile .patch .ring{width:13cqw;height:13cqw}
+.mobile .patch .matrix{gap:1.2cqw}
+.mobile .patch .scope{height:14cqw;width:100%}
+.mobile .patch-cables{display:none}
+.mobile .patch-foot{position:static;margin-top:8cqw;font-size:1.9cqw}
+"""
+
+FLASH_CSS = """
+.flash{background:#efe6d2;color:#111;padding:3cqw 4cqw;overflow:hidden}
+.flash .paper{position:absolute;inset:0;background:radial-gradient(120% 90% at 18% 0%,rgba(160,120,60,.14),transparent 52%),radial-gradient(90% 80% at 100% 100%,rgba(140,100,50,.18),transparent 56%)}
+.flash-top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:.34cqw solid #111;padding-bottom:1cqw}
+.flash-top .title{font-family:"Anton",sans-serif;font-size:4.6cqw;line-height:.88;letter-spacing:.02em;text-transform:uppercase}
+.flash-top .sub{font-family:"Space Mono",monospace;font-size:.72cqw;letter-spacing:.2em;color:#a11f1f;text-align:right}
+.flash-top nav{display:flex;gap:2.4cqw;font-family:"Space Mono",monospace;font-size:.72cqw}
+.flash-grid{position:absolute;left:4cqw;right:4cqw;top:17cqw;bottom:5.4cqw;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:2.2cqw;z-index:3}
+.flash .sheet{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;border:.14cqw solid rgba(17,17,17,.26);background:rgba(255,255,255,.22);transition:background .18s ease-out}
+.flash .sheet:hover{background:rgba(255,255,255,.5)}
+.flash .sheet svg{width:56%;height:auto;overflow:visible;transition:transform .18s cubic-bezier(.23,1,.32,1)}
+.flash .sheet:hover svg{transform:scale(1.07) rotate(-1.5deg)}
+.flash .sheet svg .boil{animation:boil .6s steps(2) infinite}
+.flash .sheet svg path,.flash .sheet svg circle,.flash .sheet svg line,.flash .sheet svg rect,.flash .sheet svg polygon{fill:none;stroke:#111;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.flash .sheet .label{position:absolute;left:.9cqw;bottom:.9cqw;font-family:"Space Mono",monospace;font-size:.6cqw;letter-spacing:.08em;color:#5a4a2a;line-height:1.5}
+.flash .sheet .stamp{position:absolute;right:.9cqw;top:.9cqw;font-family:"Anton",sans-serif;font-size:1.15cqw;letter-spacing:.05em;color:#c1272d;border:.18cqw solid #c1272d;padding:.2cqw .6cqw;border-radius:.2cqw;transform:rotate(9deg) scale(.8);opacity:0;transition:opacity .16s ease-out,transform .16s cubic-bezier(.23,1,.32,1)}
+.flash .sheet:hover .stamp,.flash .sheet:focus-within .stamp{opacity:1;transform:rotate(-6deg) scale(1)}
+.flash-foot{position:absolute;left:4cqw;right:4cqw;bottom:1.5cqw;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.68cqw;color:#7a6a48;z-index:3}
+@keyframes boil{0%{transform:translate(0,0)}50%{transform:translate(.18cqw,-.12cqw)}100%{transform:translate(0,0)}}
+.mobile .flash{padding:6cqw}
+.mobile .flash-top .title{font-size:11cqw}
+.mobile .flash-top .sub{font-size:2cqw}
+.mobile .flash-top nav{font-size:2cqw}
+.mobile .flash-grid{position:static;margin-top:9cqw;grid-template-columns:1fr;grid-template-rows:none;gap:5cqw}
+.mobile .flash .sheet{aspect-ratio:1.4;padding:4cqw}
+.mobile .flash .sheet svg{width:44%}
+.mobile .flash .sheet .label{font-size:1.9cqw;left:3cqw;bottom:3cqw}
+.mobile .flash .sheet .stamp{font-size:3.4cqw;right:3cqw;top:3cqw;border-width:.4cqw}
+.mobile .flash-foot{position:static;margin-top:8cqw;font-size:1.9cqw}
+"""
+
+COMMIT_CSS = """
+.commit{background:#fbfaf7;color:#2b2b2b;padding:3cqw 4cqw;overflow:hidden;font-family:"Space Mono",monospace}
+.commit-top{position:relative;z-index:3;display:flex;justify-content:space-between;font-size:.72cqw;letter-spacing:.12em;color:#8a8a80}
+.commit-top nav{display:flex;gap:2.4cqw}
+.commit-head{position:relative;z-index:3;margin-top:3cqw;border:1px solid #e2ded3;background:#fff;padding:1.6cqw 2cqw}
+.commit-head .row{display:grid;grid-template-columns:7cqw 1fr;gap:1.4cqw;font-size:.76cqw;line-height:1.75}
+.commit-head .row span:first-child{color:#9a9a90}
+.commit-head .msg{font-family:"Space Grotesk",sans-serif;font-size:1.5cqw;color:#141414;margin-top:1cqw}
+.commit-body{position:absolute;left:4cqw;right:4cqw;top:25.5cqw;bottom:6.4cqw;z-index:3;display:grid;grid-template-columns:1fr 24cqw;gap:2.4cqw}
+.commit-diff{border:1px solid #e2ded3;background:#fff;overflow:hidden;font-size:.92cqw;line-height:1.95}
+.commit-diff .file{display:flex;justify-content:space-between;border-bottom:1px solid #e2ded3;padding:.8cqw 1cqw;font-size:.74cqw;color:#5a5a52}
+.commit-diff .hunk{background:#f4f2ec;color:#6b6b60;padding:.3cqw 1cqw;font-size:.74cqw}
+.commit-diff .ln{display:grid;grid-template-columns:3.2cqw 1.8cqw 1fr;align-items:baseline;padding:0 .8cqw}
+.commit-diff .ln .no{color:#c2bfb4;text-align:right;padding-right:1cqw;font-size:.7cqw}
+.commit-diff .ln .sign{color:#8a8a80}
+.commit-diff .ln.add{background:#eaf7ed}
+.commit-diff .ln.add .code{color:#14632b}
+.commit-diff .ln.del{background:#fdecec}
+.commit-diff .ln.del .code{color:#9b2222}
+.commit-diff .code{white-space:pre;overflow:hidden;text-overflow:ellipsis}
+.commit-diff .ln:hover{outline:1px solid #b9d4f5;background:#f0f6ff}
+.commit-side .panel{border:1px solid #e2ded3;background:#fff;padding:1.2cqw;margin-bottom:1.4cqw}
+.commit-side h4{font-size:.68cqw;letter-spacing:.16em;color:#8a8a80;font-weight:400}
+.commit-side .big{font-family:"Space Grotesk",sans-serif;font-size:2.2cqw;font-weight:700;margin-top:.4cqw}
+.commit-side .big em{font-style:normal;color:#4bd487}
+.commit-side .bar{height:.9cqw;background:#f0eee6;margin-top:.9cqw;display:flex;overflow:hidden}
+.commit-side .bar i{background:#4bd487;width:100%}
+.commit-side a.link{display:flex;justify-content:space-between;font-size:.76cqw;padding:.75cqw 0;border-top:1px solid #eeece4;color:#141414}
+.commit-side a.link:first-of-type{border-top:0}
+.commit-comment{position:absolute;z-index:4;left:49cqw;top:31cqw;width:17cqw;background:#fff;border:1px solid #dcd8cc;border-radius:.8cqw;padding:1cqw;font-family:"Space Grotesk",sans-serif;font-size:.8cqw;box-shadow:0 1cqw 2cqw rgba(0,0,0,.08)}
+.commit-comment .who{font-family:"Space Mono",monospace;font-size:.64cqw;color:#8a8a80;margin-bottom:.4cqw}
+.commit-foot{position:absolute;left:4cqw;right:4cqw;bottom:2.2cqw;display:flex;justify-content:space-between;font-size:.68cqw;color:#9a9a90;z-index:3}
+.mobile .commit{padding:6cqw}
+.mobile .commit-top{font-size:2cqw}
+.mobile .commit-head{margin-top:6cqw;padding:4cqw}
+.mobile .commit-head .row{grid-template-columns:18cqw 1fr;font-size:2cqw;line-height:2}
+.mobile .commit-head .msg{font-size:4.6cqw;margin-top:2.4cqw}
+.mobile .commit-body{position:static;grid-template-columns:1fr;gap:6cqw;margin-top:7cqw}
+.mobile .commit-diff{font-size:2.35cqw;line-height:2.1}
+.mobile .commit-diff .file{font-size:1.9cqw;padding:2cqw 2.4cqw}
+.mobile .commit-diff .hunk{font-size:1.9cqw}
+.mobile .commit-diff .ln{grid-template-columns:7cqw 4cqw 1fr;padding:0 2.4cqw}
+.mobile .commit-diff .ln .no{font-size:1.8cqw}
+.mobile .commit-side .panel{padding:4cqw;margin-bottom:4cqw}
+.mobile .commit-side h4{font-size:1.8cqw}
+.mobile .commit-side .big{font-size:6cqw}
+.mobile .commit-side a.link{font-size:2.4cqw;padding:2.4cqw 0}
+.mobile .commit-comment{position:static;width:auto;margin-top:4cqw;font-size:2.6cqw;padding:3cqw}
+.mobile .commit-comment .who{font-size:1.9cqw}
+.mobile .commit-foot{position:static;margin-top:7cqw;font-size:1.9cqw}
+"""
+
+NEW_CSS = "".join([SPEC_CSS, VIT_CSS, FOIL_CSS, LINE_CSS, PATCH_CSS, FLASH_CSS, COMMIT_CSS])
+
+INTERACT = """
+<script>
+(function(){
+  try{
+    var m=/[?&]dir=([A-H])/.exec(location.search);
+    if(m){
+      Array.prototype.forEach.call(document.querySelectorAll('.direction'),function(s){ if(s.id!==m[1]){ s.parentNode.removeChild(s); } });
+      Array.prototype.forEach.call(document.querySelectorAll('.intro,.rtop,.rfoot,.revdivider'),function(s){ s.parentNode.removeChild(s); });
+    }
+  }catch(e){}
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function lerp(a,b,t){return a+(b-a)*t;}
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function loop(fn){ (function step(){ fn(); requestAnimationFrame(step); })(); }
+
+  document.querySelectorAll('[data-specimen]').forEach(function(el){
+    var o1=el.querySelector('[data-wght]'), o2=el.querySelector('[data-track]');
+    if(reduce){ return; }
+    var tx=.42, ty=.18, x=tx, y=ty;
+    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(); tx=(e.clientX-r.left)/r.width; ty=(e.clientY-r.top)/r.height;});
+    el.addEventListener('pointerleave',function(){tx=.42;ty=.18;});
+    loop(function(){
+      x=lerp(x,clamp(tx,0,1),.12); y=lerp(y,clamp(ty,0,1),.12);
+      var wght=Math.round(150+x*630);
+      var ls=(0.02-y*0.085);
+      el.style.setProperty('--wght',wght);
+      el.style.setProperty('--ls',ls.toFixed(3)+'em');
+      if(o1){o1.textContent=wght;}
+      if(o2){o2.textContent=ls.toFixed(3)+'em';}
+    });
+  });
+
+  document.querySelectorAll('[data-tilt]').forEach(function(el){
+    if(reduce){ return; }
+    var max=parseFloat(el.getAttribute('data-tilt'))||8;
+    var trx=0,trY=0,rx=0,ry=0;
+    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(); trY=((e.clientX-r.left)/r.width-.5)*2*max; trx=-((e.clientY-r.top)/r.height-.5)*2*max;});
+    el.addEventListener('pointerleave',function(){trx=0;trY=0;});
+    loop(function(){
+      rx=lerp(rx,trx,.1); ry=lerp(ry,trY,.1);
+      el.style.setProperty('--rx',rx.toFixed(2)+'deg');
+      el.style.setProperty('--ry',ry.toFixed(2)+'deg');
+    });
+  });
+
+  document.querySelectorAll('[data-pointer]').forEach(function(el){
+    if(reduce){ return; }
+    var tx=.5,ty=.3,x=.5,y=.3;
+    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(); tx=(e.clientX-r.left)/r.width; ty=(e.clientY-r.top)/r.height;});
+    el.addEventListener('pointerleave',function(){tx=.5;ty=.3;});
+    loop(function(){
+      x=lerp(x,clamp(tx,0,1),.12); y=lerp(y,clamp(ty,0,1),.12);
+      el.style.setProperty('--mx',(x*100).toFixed(1)+'%');
+      el.style.setProperty('--my',(y*100).toFixed(1)+'%');
+    });
+  });
+
+  document.querySelectorAll('[data-knob]').forEach(function(el){
+    var val=parseFloat(el.getAttribute('data-knob'))||0, sy=0, sv=0, drag=false;
+    var out=el.parentNode.querySelector('[data-val]');
+    function apply(){ el.style.setProperty('--k',val+'deg'); if(out){ out.textContent=Math.round((val+135)/270*100); } }
+    el.addEventListener('pointerdown',function(e){ drag=true; sy=e.clientY; sv=val; if(el.setPointerCapture){el.setPointerCapture(e.pointerId);} e.preventDefault(); });
+    el.addEventListener('pointermove',function(e){ if(!drag){return;} val=clamp(sv+(sy-e.clientY)*1.4,-135,135); apply(); });
+    el.addEventListener('pointerup',function(){ drag=false; });
+    el.addEventListener('pointercancel',function(){ drag=false; });
+    el.addEventListener('keydown',function(e){ if(e.key==='ArrowUp'||e.key==='ArrowRight'){val=clamp(val+8,-135,135);apply();e.preventDefault();} if(e.key==='ArrowDown'||e.key==='ArrowLeft'){val=clamp(val-8,-135,135);apply();e.preventDefault();} });
+  });
+})();
+</script>
+"""
+
+GHM = a(GH, "GitHub", "mono")
+BSM = a(BS, "Bluesky", "mono")
+
+SPC = (
+    '<div class="site spc" data-specimen><span class="base" aria-hidden="true"></span>'
+    '<header class="spc-top"><span>MUSSE FOUNDRY</span><span>SPECIMEN 01 / VARIABLE GROTESK</span><nav>'
+    + GHM + " " + BSM + "</nav></header>"
+    '<span class="lead">INTERACTIVE. MOVE YOUR CURSOR OVER THE TYPE.</span>'
+    '<div class="spc-word" aria-label="MusseJusse"><span>Musse</span><span>Jusse</span></div>'
+    '<div class="spc-read">WEIGHT <b data-wght>430</b><br>TRACKING <b data-track>-0.020em</b><br>AXES 300-700</div>'
+    '<div class="spc-glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 &amp;@#%</div>'
+    '<section class="spc-work">'
+    '<a href="' + R + '"><span class="g">Aa</span><div><h3>Roundest Pok&eacute;mon</h3>'
+    '<p class="mono">SET IN 5.6 / NEXT.JS / COMPARISON &#8599;</p></div></a>'
+    '<a href="' + M + '"><span class="g">Aa</span><div><h3>Models</h3>'
+    '<p class="mono">SET IN 5.6 / ASTRO / REFERENCE &#8599;</p></div></a>'
+    "</section>"
+    '<footer class="spc-foot"><span>MUSSE FOUNDRY / 2026</span><span>LICENSED FOR THE WEB</span></footer>'
+    "</div>"
+)
+
+VIT = (
+    '<div class="site vit" data-pointer>'
+    '<header class="vit-top"><span>MUSSEJUSSE / GALLERY</span><nav>' + GHM + " " + BSM + "</nav></header>"
+    '<div class="vit-scene" data-tilt="5"><span class="vit-wall" aria-hidden="true"></span>'
+    '<span class="vit-floor" aria-hidden="true"></span><span class="vit-pool" aria-hidden="true"></span>'
+    '<span class="vit-pool two" aria-hidden="true"></span>'
+    '<article class="vit-work one"><div class="vit-frame"><div class="vit-canvas blue"></div></div>'
+    '<div class="vit-plaque"><h3>Roundest Pok&eacute;mon</h3>'
+    '<p>Interactive comparison, 2026. Next.js.<br><a href="' + R + '">roundest.mussejusse.com &#8599;</a></p></div></article>'
+    '<article class="vit-work two"><div class="vit-frame"><div class="vit-canvas ochre"></div></div>'
+    '<div class="vit-plaque"><h3>Models</h3>'
+    '<p>Reference catalogue, 2026. Astro.<br><a href="' + M + '">models.mussejusse.com &#8599;</a></p></div></article>'
+    "</div>"
+    '<span class="vit-light" aria-hidden="true"></span>'
+    '<aside class="vit-guide"><span class="mono">EXHIBITION / OPEN INDEFINITELY</span>'
+    "<h1>Two works,<br>one builder.</h1>"
+    "<p>A small room for things I make and never quite finish. Look around; the light follows you.</p>"
+    '<div class="list"><span><em>01</em><em>Roundest Pok&eacute;mon</em></span><span><em>02</em><em>Models</em></span></div></aside>'
+    "</div>"
+)
+
+
+def foil_card(kind, name, hp, typeline, moves, url, cta):
+    art = "orb" if kind == "pink" else "grid"
+    mv = "".join('<div class="move"><b>%s</b><span>%s</span></div>' % m for m in moves)
+    return (
+        '<article class="card ' + kind + '" data-tilt="11" data-pointer><div class="inner">'
+        '<div class="hbar"><h3>' + name + '</h3><span class="hp">' + hp + "</span></div>"
+        '<div class="art ' + art + '"></div>'
+        '<div class="type">' + typeline + "</div>"
+        '<div class="moves">' + mv + "</div>"
+        '<div class="foot"><span>ILLUS. M. JUSSE</span><a href="' + url + '">' + cta + " &#8599;</a></div>"
+        "</div><span class=\"holo\" aria-hidden=\"true\"></span><span class=\"glare\" aria-hidden=\"true\"></span></article>"
+    )
+
+
+FOIL = (
+    '<div class="site foil">'
+    '<header class="foil-top"><span>SERIES MJ / FIRST EDITION</span><nav>' + GHM + " " + BSM + "</nav></header>"
+    '<div class="foil-deck">'
+    + foil_card("pink", "Roundest Pok&eacute;mon", "HP 90", "DEVELOPER / COMPARISON",
+                [("01", "Server Actions. Renders the roundness question instantly."),
+                 ("02", "KV Cache. Never answers the same way twice.")], R, "PLAY")
+    + foil_card("blue", "Models", "HP 110", "DEVELOPER / REFERENCE",
+                [("01", "Astro Islands. Ships almost no JavaScript."),
+                 ("02", "Content Collections. Every model, typed.")], M, "PLAY")
+    + "</div>"
+    '<div class="foil-title">Gotta build &rsquo;em all.</div>'
+    "</div>"
+)
+
+
+callout_url = {}
+LINE_CALLOUTS = {
+    "s1": ("HELLO", False, "major interchange", None),
+    "s2": ("FIRST COMMIT", True, "", '<span class="mono">STATION</span><h3>Curiosity</h3><p>Where every build starts.</p>'),
+    "s3": ("ROUNDEST POK&Eacute;MON", False, "major", None),
+    "s4": ("SERVER ACTIONS", True, "", '<span class="mono">STATION</span><h3>Fetch</h3><p>Ask the server, keep it instant.</p>'),
+    "s5": ("MODELS", False, "major", None),
+    "s6": ("ASTRO", True, "", '<span class="mono">STATION</span><h3>Islands</h3><p>Ship less JavaScript.</p>'),
+    "s7": ("CACHE COMPONENTS", False, "", '<span class="mono">STATION</span><h3>Cache</h3><p>Never ask twice.</p>'),
+    "s8": ("ALWAYS BUILDING", True, "major", None),
+}
+
+LINE = (
+    '<div class="site line">'
+    '<header class="line-top"><span class="brand"><span class="roundel">MJ</span>MUSSEJUSSE TRANSIT</span>'
+    "<nav>" + GHM + " " + BSM + "</nav></header>"
+    '<h1 class="line-title">Two experiments,<br>one long line.</h1>'
+    '<div class="line-map"><span class="line-track" aria-hidden="true"></span>'
+    '<span class="line-station s1 major interchange"><span class="name">HELLO</span>'
+    '<span class="callout"><span class="mono">TERMINUS / START</span><h3>You are here</h3>'
+    "<p>Twelve years of making things on the web, in one line.</p></span></span>"
+    '<span class="line-station s2 down"><span class="name">FIRST COMMIT</span>'
+    '<span class="callout"><span class="mono">STATION</span><h3>Curiosity</h3><p>Where every build starts.</p></span></span>'
+    '<a class="line-station s3 major" href="' + R + '"><span class="name">ROUNDEST POK&Eacute;MON</span>'
+    '<span class="callout"><span class="mono">INTERCHANGE / NEXT.JS</span><h3>Roundest Pok&eacute;mon</h3>'
+    "<p>Two Pokémon, one very round question. Ride the line to find out.</p></span></a>"
+    '<span class="line-station s4 down"><span class="name">SERVER ACTIONS</span>'
+    '<span class="callout"><span class="mono">STATION</span><h3>Fetch</h3><p>Ask the server, keep it instant.</p></span></span>'
+    '<a class="line-station s5 major" href="' + M + '"><span class="name">MODELS</span>'
+    '<span class="callout"><span class="mono">INTERCHANGE / ASTRO</span><h3>Models</h3>'
+    "<p>A catalogue of every model, provider and capability.</p></span></a>"
+    '<span class="line-station s6 down"><span class="name">ASTRO</span>'
+    '<span class="callout"><span class="mono">STATION</span><h3>Islands</h3><p>Ship less JavaScript.</p></span></span>'
+    '<span class="line-station s7"><span class="name">CACHE COMPONENTS</span>'
+    '<span class="callout"><span class="mono">STATION</span><h3>Cache</h3><p>Never ask twice.</p></span></span>'
+    '<span class="line-station s8 down major"><span class="name">ALWAYS BUILDING</span>'
+    '<span class="callout"><span class="mono">TERMINUS</span><h3>Never finished</h3>'
+    "<p>No final stop. The line keeps running.</p></span></span>"
+    '<span class="line-train" aria-hidden="true"></span></div>'
+    '<aside class="line-legend"><span class="mono">LINE 2 / SERVICE</span><h4>The Build Line</h4>'
+    "<p>One train, two experiments, no timetable. It runs through everything I make.</p>"
+    '<div class="key"><span><i></i>Major station / project</span><span><i class="ic"></i>Interchange / where it starts</span></div></aside>'
+    '<div class="line-foot">ALL STATIONS ACCESSIBLE<br>SOURCE ON GITHUB</div>'
+    "</div>"
+)
+
+PATCH = (
+    '<div class="site patch"><span class="metal" aria-hidden="true"></span>'
+    '<header class="patch-top"><span>MUSSEJUSSE / MODULAR SYSTEM</span><nav>' + GHM + " " + BSM + "</nav></header>"
+    '<div class="patch-rack">'
+    '<section class="module"><span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>'
+    '<div class="strip"><span>01</span><span>SOURCE</span></div>'
+    '<div class="knob" data-knob="20" tabindex="0" role="slider" aria-label="Curiosity amount"></div>'
+    '<div class="readout">CURIOSITY <b data-val>57</b></div>'
+    '<div class="jacks"><span class="jack"></span><span class="jack"></span></div></section>'
+    '<section class="module"><span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>'
+    '<div class="strip"><span>02</span><span>OSC</span></div>'
+    '<div class="ring" aria-hidden="true"></div>'
+    '<div class="name"><a href="' + R + '">Roundest Pok&eacute;mon &#8599;</a></div>'
+    '<div class="desc">One round output. Absolutely no square edges.</div>'
+    '<div class="jacks"><span class="jack"></span></div></section>'
+    '<section class="module"><span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>'
+    '<div class="strip"><span>03</span><span>SEQ</span></div>'
+    '<div class="matrix" aria-hidden="true">'
+    + "".join('<i class="on" style="animation:blip %ss steps(1) infinite"></i>' % (1.2 + (i % 5) * 0.28) if i % 3 == 0 else "<i></i>" for i in range(16))
+    + "</div>"
+    '<div class="name"><a href="' + M + '">Models &#8599;</a></div>'
+    '<div class="desc">A 16-step register of everything.</div>'
+    '<div class="jacks"><span class="jack"></span></div></section>'
+    '<section class="module"><span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>'
+    '<div class="strip"><span>04</span><span>OUT</span></div>'
+    '<div class="scope" aria-hidden="true"><svg viewBox="0 0 400 60" preserveAspectRatio="none">'
+    '<path d="M0 30 L10 30 L14 12 L20 48 L26 24 L32 36 L38 30 L60 30 L64 10 L70 50 L76 22 L82 38 L88 30 L110 30 L114 12 L120 48 L126 24 L132 36 L138 30 L160 30 L164 10 L170 50 L176 22 L182 38 L188 30 L200 30"/>'
+    '<path transform="translate(200,0)" d="M0 30 L10 30 L14 12 L20 48 L26 24 L32 36 L38 30 L60 30 L64 10 L70 50 L76 22 L82 38 L88 30 L110 30 L114 12 L120 48 L126 24 L132 36 L138 30 L160 30 L164 10 L170 50 L176 22 L182 38 L188 30 L200 30"/></svg></div>'
+    '<div class="name">Signal out</div><div class="desc">Everything routes to the web.</div>'
+    '<div class="jacks"><span class="jack"></span><span class="jack"></span></div></section>'
+    "</div>"
+    '<svg class="patch-cables" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">'
+    '<path class="c1" d="M58 250 C82 300,116 300,140 250"/>'
+    '<path class="c2" d="M160 250 C184 304,216 304,240 250"/>'
+    '<path class="c3" d="M38 250 C120 314,270 314,342 250"/>'
+    '<path class="flow c1" d="M58 250 C82 300,116 300,140 250"/>'
+    '<path class="flow c2" d="M160 250 C184 304,216 304,240 250"/>'
+    "</svg>"
+    '<footer class="patch-foot"><span>CV / GATE / TRIG / SIGNAL</span><span>PATCHED BY MUSSE</span></footer>'
+    "</div>"
+)
+
+
+def flash_sheet(label, stamp, art, url=None):
+    body = '<svg viewBox="0 0 120 120" aria-hidden="true">' + art + "</svg>"
+    tag = "a" if url else "div"
+    href = ' href="' + url + '"' if url else ""
+    return (
+        "<" + tag + href + ' class="sheet"><span class="label">' + label + "</span>"
+        '<span class="stamp">' + stamp + "</span>" + body + "</" + tag + ">"
+    )
+
+
+FLASH_ART = {
+    "roundest": '<g class="boil"><circle cx="60" cy="60" r="34"/><circle cx="60" cy="60" r="5"/><line x1="60" y1="8" x2="60" y2="20"/><line x1="60" y1="100" x2="60" y2="112"/><line x1="8" y1="60" x2="20" y2="60"/><line x1="100" y1="60" x2="112" y2="60"/></g>',
+    "models": '<g class="boil"><rect x="24" y="28" width="72" height="14" rx="4"/><rect x="24" y="52" width="72" height="14" rx="4"/><rect x="24" y="76" width="72" height="14" rx="4"/></g>',
+    "dagger": '<g class="boil"><path d="M60 10 L68 52 L60 60 L52 52 Z"/><line x1="60" y1="60" x2="60" y2="104"/><line x1="46" y1="56" x2="74" y2="56"/></g>',
+    "snake": '<g class="boil"><path d="M66 12 L38 62 L58 62 L46 108 L82 50 L60 50 Z"/></g>',
+    "eye": '<g class="boil"><path d="M12 60 C32 34,68 34,88 60 C68 86,32 86,12 60 Z"/><circle cx="50" cy="60" r="10"/><line x1="50" y1="20" x2="50" y2="32"/><line x1="18" y1="30" x2="26" y2="40"/><line x1="82" y1="30" x2="74" y2="40"/></g>',
+    "banner": '<g class="boil"><path d="M18 40 L102 40 L94 60 L102 80 L18 80 L26 60 Z"/><text x="60" y="66" text-anchor="middle" font-family="Anton, sans-serif" font-size="20" fill="#111" stroke="none">BUILD</text></g>',
+}
+
+FLASH = (
+    '<div class="site flash"><span class="paper" aria-hidden="true"></span>'
+    '<header class="flash-top"><span class="title">Flash</span>'
+    '<span class="sub">MUSSEJUSSE ORIGINALS /<br>WALK-INS WELCOME</span>'
+    "<nav>" + GHM + " " + BSM + "</nav></header>"
+    '<div class="flash-grid">'
+    + flash_sheet("FLASH 01 / APPROX 4 IN<br>NEXT.JS / COMPARISON", "OPEN", FLASH_ART["roundest"], R)
+    + flash_sheet("FLASH 02 / APPROX 5 IN<br>ASTRO / REFERENCE", "OPEN", FLASH_ART["models"], M)
+    + flash_sheet("FLASH 03 / DAGGER", "BOOKED", FLASH_ART["dagger"])
+    + flash_sheet("FLASH 04 / LIGHTNING BOLT", "BOOKED", FLASH_ART["snake"])
+    + flash_sheet("FLASH 05 / EYE", "FLASH ONLY", FLASH_ART["eye"])
+    + flash_sheet("FLASH 06 / BANNER", "BOOKED", FLASH_ART["banner"])
+    + "</div>"
+    '<footer class="flash-foot"><span>ALL FLASH DRAWN ONCE, NEVER REPEATED</span><span>DEPOSIT SECURES YOUR DATE</span></footer>'
+    "</div>"
+)
+
+COMMIT_LINES = [
+    ("add", "+", 'name: "MusseJusse"'),
+    ("add", "+", 'role: "builds for the web"'),
+    ("add", "+", 'status: "always building, never finished"'),
+    ("add", "+", "experiments:"),
+    ("add", "+", '  - name: "Roundest Pok&eacute;mon"'),
+    ("add", "+", '    stack: "Next.js"'),
+    ("add", "+", '    url:  "https://roundest.mussejusse.com"'),
+    ("add", "+", '  - name: "Models"'),
+    ("add", "+", '    stack: "Astro"'),
+    ("add", "+", '    url:  "https://models.mussejusse.com"'),
+    ("add", "+", "links: [github, bluesky]"),
+]
+_commit_rows = "".join(
+    '<div class="ln %s"><span class="no">%d</span><span class="sign">%s</span><span class="code">%s</span></div>'
+    % (kind, i + 1, sign, code)
+    for i, (kind, sign, code) in enumerate(COMMIT_LINES)
+)
+
+COMMIT = (
+    '<div class="site commit">'
+    '<header class="commit-top"><span>mussejusse / git</span><nav>' + GHM + " " + BSM + "</nav></header>"
+    '<div class="commit-head"><div class="row">'
+    "<span>commit</span><span>9f3a1c2 (main)</span>"
+    "<span>author</span><span>Musse Jusse &lt;musse@mussejusse.com&gt;</span>"
+    "<span>date</span><span>Fri Sep 11 2026</span></div>"
+    '<div class="msg">feat: launch a personal site about building</div></div>'
+    '<div class="commit-body"><div class="commit-diff">'
+    '<div class="file"><span>b/mussejusse</span><span>+11 -0</span></div>'
+    '<div class="hunk">@@ -0,0 +1,11 @@</div>'
+    + _commit_rows
+    + "</div>"
+    '<aside class="commit-side">'
+    '<div class="panel"><h4>FILES CHANGED</h4><div class="big">1 <em>+11</em></div><div class="bar"><i></i></div></div>'
+    '<div class="panel"><h4>DEPLOY PREVIEWS</h4>'
+    '<a class="link" href="' + R + '">roundest.mussejusse.com<span>&#8599;</span></a>'
+    '<a class="link" href="' + M + '">models.mussejusse.com<span>&#8599;</span></a></div>'
+    '<div class="panel"><h4>STATUS</h4><div class="big">Building</div></div>'
+    "</aside></div>"
+    '<div class="commit-comment"><div class="who">reviewer / bsky</div>Nice. Ship it, but the status line should never change.</div>'
+    '<footer class="commit-foot"><span>1 file changed / review requested</span><span>Approved by 1 reviewer</span></footer>'
+    "</div>"
+)
+
 DIRECTIONS = [
-    ("A", "Observatory", "The page as a night sky: Roundest Pok&eacute;mon is the moon, Models is a constellation that draws itself.", OBS),
-    ("B", "Riso", "A two-ink screenprint: halftone wordmark, misregistration, and two hand-printed project lots.", RISO),
-    ("C", "Blueprint", "An engineering drawing with dimension callouts, detail frames and a title block that signs the work.", BP),
-    ("D", "Tide", "A descent from surface light to the abyss, with a depth gauge and two glass specimens.", TIDE),
-    ("E", "Terminal", "An amber phosphor terminal: ASCII wordmark, a live process table and a signal meter.", TERM),
-    ("F", "Mouvement", "The exhibition caseback: perlage, Geneva stripes, a gear train and a balance wheel that keeps ticking.", MOVEMENT_DIR),
-    ("G", "Secteur", "A vintage sector dial with railroad tracks, a small seconds and a date window, printed on aged parchment.", SECTOR_DIR),
-    ("H", "Chronographe", "A panda chronograph: tachymeter bezel, two black complication subdials and a red sweeping chrono hand.", TACH_DIR),
+    ("A", "Specimen", "A living type specimen. The wordmark is a variable font you morph with the cursor: weight and tracking follow your hand.", SPC),
+    ("B", "Riso", "Kept from round one. A two-ink screenprint: halftone wordmark, misregistration, and two hand-printed project lots.", RISO),
+    ("C", "Vitrine", "A small 3D gallery. Two hung works with wall labels, and a spotlight that follows the pointer as the room tilts.", VIT),
+    ("D", "Foil", "The two experiments as holographic trading cards, with HP, moves, and a foil sheen that shifts when you tilt them.", FOIL),
+    ("E", "Line 2", "The site as a transit diagram. A train runs the line, and the two projects are interchange stations you can open.", LINE),
+    ("F", "Patch", "A modular synthesizer. Draggable knobs, patched cables, a pulsing oscillator and a live scope. Projects as modules.", PATCH),
+    ("G", "Flash", "A tattoo flash sheet. Bold hand-drawn designs, two of them bookable, with a red stamp on hover.", FLASH),
+    ("H", "Commit", "The site as a code review. A real diff that adds MusseJusse, with deploy previews and a review comment.", COMMIT),
 ]
 
 
@@ -1030,8 +1677,8 @@ def section(letter, title, desc, markup):
         for kind, size in [("desktop", "1440 &times; 1000"), ("mobile", "390 &times; 844")]
     )
     prefix = ""
-    if letter == "F":
-        prefix = '<div class="revdivider"><span>WATCH STUDIES / HOROLOGY AS A THEME</span></div>'
+    if letter == "A":
+        prefix = '<div class="revdivider"><span>ROUND TWO / SEVEN NEW DIRECTIONS. B (RISO) IS KEPT FROM ROUND ONE.</span></div>'
     return (
         prefix
         + '<section class="direction" id="%s">'
@@ -1047,19 +1694,19 @@ def build():
         '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         "<title>MusseJusse / Redesign directions</title>"
-        "<style>" + FONT_CSS + STAGE_CSS + CHROME_CSS + WATCH_CSS + OBS_CSS + RISO_CSS + BP_CSS + TIDE_CSS + TERM_CSS + "</style>"
+        "<style>" + FONT_CSS + STAGE_CSS + CHROME_CSS + RISO_CSS + NEW_CSS + "</style>"
         "</head><body>"
         '<div class="rtop"><div class="row"><h1>MusseJusse / redesign directions</h1>'
         "<span>eight directions &middot; desktop + mobile</span>"
         '<nav class="rnav" aria-label="Directions">' + nav + "</nav></div></div>"
         '<div class="wrap">'
         '<header class="intro"><span class="k">FULL UI REDESIGN / ROUND TWO</span>'
-        "<h2>Eight ways this site could feel. Five general directions, plus three watch studies for the horology theme. Each one is a working page, not a picture, so resize the window and it holds up.</h2>"
-        "<p>Every direction is built from the same content: MusseJusse, two experiments, two links. The differences are all voice. Pick one, or mix the parts you like, and I will build it for real.</p></header>"
+        "<h2>Eight directions. I kept the one you liked (B, Riso) and rebuilt the rest from scratch, bigger swing this time: a living type specimen, a 3D gallery, holographic cards, a transit map, a modular synth, a tattoo flash sheet, and the site as a code diff.</h2>"
+        "<p>Every direction is a working page with desktop and mobile views, not a picture. The interactive ones (A, C, D, F) respond to your cursor; move over them. Pick one, or mix the parts you like, and I will build it for real.</p></header>"
         + sections
-        + '<footer class="rfoot"><span>Eight directions, rendered live in the browser with embedded typefaces.</span>'
+        + '<footer class="rfoot"><span>Eight directions, rendered live. A, C, D and F respond to the pointer.</span>'
         "<span>" + a(GH, "GitHub", "") + " &middot; " + a(BS, "Bluesky", "") + "</span></footer>"
-        "</div></body></html>"
+        "</div>" + INTERACT + "</body></html>"
     )
     return html
 
