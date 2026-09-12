@@ -3,107 +3,182 @@ import Layout from "../layouts/main.astro";
 ---
 
 <Layout>
-  <div class="h-screen w-full overflow-hidden relative bg-black text-white font-mono">
-    
-    <!-- Grid overlay -->
-    <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
-    
-    <!-- Diagonal stripe -->
-    <div class="absolute top-0 right-0 w-1/2 h-full bg-yellow-400 transform skew-x-12 translate-x-20 opacity-90"></div>
-    <div class="absolute top-0 right-0 w-32 h-full bg-red-500 transform skew-x-12 translate-x-40"></div>
-    
-    <!-- Main content -->
-    <div class="relative z-10 h-full flex flex-col justify-between p-6 md:p-12">
-      
-      <!-- Top section -->
-      <div class="flex justify-between items-start">
-        <div>
-          <div class="text-xs tracking-widest text-gray-400 mb-2">[ EXPERIMENTING ]</div>
-          <h1 class="text-6xl md:text-9xl font-black tracking-tighter leading-none">
-            MUSSE<br/>
-            <span class="text-yellow-400">JUSSE</span>
-          </h1>
-        </div>
-        <div class="text-right">
-          <div class="text-xs text-gray-500">EST. 2024</div>
-          <div class="text-xs text-gray-500">V3.0</div>
-        </div>
-      </div>
-      
-      <!-- Middle section -->
-      <div class="flex flex-col md:flex-row gap-8 md:gap-16 items-start md:items-end">
-        <div class="flex-1">
-          <div class="border-l-4 border-yellow-400 pl-4 py-2">
-            <p class="text-lg md:text-xl text-gray-300 max-w-lg">
-              Building and experimenting with
-              <span class="text-white font-bold">cutting-edge technology</span> 
-              and modern frameworks.
-            </p>
-          </div>
-        </div>
-        
-        <!-- Project boxes -->
-        <div class="flex w-full max-w-sm flex-col gap-4">
-          <div class="bg-white text-black p-6 md:p-8 w-full">
-            <div class="flex justify-between items-start mb-4">
-              <span class="text-xs tracking-widest text-gray-500">FEATURED PROJECT</span>
-              <span class="text-yellow-400 text-2xl">-&gt;</span>
-            </div>
-            <a href="https://roundest.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
-              ROUNDEST<br/>POKEMON
-            </a>
-            <div class="mt-4 text-xs text-gray-600 leading-relaxed">
-              Next.JS 16 // Cache Components // Server Actions // KV Store
-            </div>
-          </div>
+  <div class="site relative min-h-screen bg-[#fbfbfa] font-sans text-[#131313]">
+    <div
+      class="mx-auto flex min-h-screen max-w-[1200px] flex-col px-5 md:px-12"
+    >
+      <!-- top bar -->
+      <header
+        class="flex flex-wrap items-center justify-between gap-2 border-b border-[#e7e7e4] pb-4 pt-4"
+      >
+        <a
+          href="/"
+          class="text-[14px] font-bold tracking-[-0.02em] text-[#131313] no-underline"
+          >mussejusse.com</a
+        >
+        <nav
+          class="mono flex items-center gap-6 text-[11px] uppercase tracking-[0.14em] text-[#8a8a86]"
+        >
+          <a
+            href="https://github.com/MusseJusse"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#131313] no-underline transition-colors duration-150 hover:text-[#ff5a36]"
+            >GitHub</a
+          >
+          <a
+            href="https://bsky.app/profile/mussejusse.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#131313] no-underline transition-colors duration-150 hover:text-[#ff5a36]"
+            >Bluesky</a
+          >
+        </nav>
+      </header>
 
-          <div class="bg-white text-black p-6 md:p-8 w-full">
-            <div class="flex justify-between items-start mb-4">
-              <span class="text-xs tracking-widest text-gray-500">PROJECT</span>
-              <span class="text-yellow-400 text-2xl">-&gt;</span>
-            </div>
-            <a href="https://models.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
-              MODELS.MUSSEJUSSE
-            </a>
-            <div class="mt-4 text-xs text-gray-600 leading-relaxed">
-              Astro // Ultra Performant // models.dev implementation
-            </div>
-          </div>
-        </div>
+      <!-- hero -->
+      <section class="pb-6 pt-10 md:pb-10 md:pt-24">
+        <h1
+          class="m-0 text-[clamp(64px,14cqi,168px)] font-black uppercase leading-[0.88] tracking-[-0.05em]"
+        >
+          Musse<br />
+          <span class="text-[#ff5a36]">Jusse.</span>
+        </h1>
+        <p
+          class="mono mt-6 max-w-[46ch] text-[12px] leading-relaxed text-[#6b6b67] md:text-[13px]"
+        >
+          Small things for the web, built in public and left running. The dot
+          above tracks the work.
+        </p>
+      </section>
+
+      <!-- activity line: one orange dot walks the hairline -->
+      <div
+        class="pulse relative mx-0 my-8 h-[2px] rounded bg-[#e7e7e4]"
+        aria-hidden="true"
+      >
+        <span class="pulse-car"></span>
       </div>
-      
-      <!-- Bottom section -->
-      <div class="flex justify-between items-end">
-        <div class="flex gap-6">
-          <a href="https://bsky.app/profile/mussejusse.com" target="_blank" rel="noreferrer" class="group flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors">
-            <span class="w-8 h-8 border border-current flex items-center justify-center text-xs">BS</span>
-            <span class="text-xs tracking-wider hidden md:block">BLUESKY</span>
-          </a>
-          <a href="https://github.com/MusseJusse" target="_blank" rel="noreferrer" class="group flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors">
-            <span class="w-8 h-8 border border-current flex items-center justify-center text-xs">GH</span>
-            <span class="text-xs tracking-wider hidden md:block">GITHUB</span>
-          </a>
-          <a href="https://vercel.com" target="_blank" rel="noreferrer" class="group flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors">
-            <span class="w-8 h-8 border border-current flex items-center justify-center text-xs">VC</span>
-            <span class="text-xs tracking-wider hidden md:block">VERCEL</span>
-          </a>
-        </div>
-        
-        <div class="text-right">
-          <div class="text-xs text-gray-600 tracking-widest">
-            HOSTED ON VERCEL
-          </div>
-          <div class="text-xs text-gray-600">
-            SOURCE ON GITHUB
-          </div>
-        </div>
-      </div>
+
+      <!-- project rows -->
+      <main class="pb-2">
+        <a
+          href="https://roundest.mussejusse.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="row group relative -mt-px grid grid-cols-[1fr_auto] items-center gap-x-5 gap-y-1 border-b border-t border-[#e7e7e4] px-4 py-6 no-underline transition-colors duration-[180ms] hover:bg-white focus-visible:bg-white focus-visible:outline-none md:grid-cols-[1fr_auto_auto] md:py-8"
+        >
+          <span
+            class="text-[clamp(26px,4.8cqi,44px)] font-extrabold leading-none tracking-[-0.035em] text-[#131313]"
+          >
+            Roundest Pok&eacute;mon
+          </span>
+          <span
+            class="mono hidden text-[10px] tracking-[0.1em] text-[#8a8a86] md:block"
+          >
+            next.js 16 &middot; 2025
+          </span>
+          <span
+            class="justify-self-end text-[20px] text-[#b3b3af] transition-[transform,color] duration-[220ms] group-hover:translate-x-1.5 group-hover:text-[#131313] group-focus-visible:translate-x-1.5 group-focus-visible:text-[#131313]"
+            aria-hidden="true">&rarr;</span
+          >
+        </a>
+
+        <a
+          href="https://models.mussejusse.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="row group relative -mt-px grid grid-cols-[1fr_auto] items-center gap-x-5 gap-y-1 border-y border-[#e7e7e4] px-4 py-6 no-underline transition-colors duration-[180ms] hover:bg-white focus-visible:bg-white focus-visible:outline-none md:grid-cols-[1fr_auto_auto] md:py-8"
+        >
+          <span
+            class="text-[clamp(26px,4.8cqi,44px)] font-extrabold leading-none tracking-[-0.035em] text-[#131313]"
+          >
+            Models
+          </span>
+          <span
+            class="mono hidden text-[10px] tracking-[0.1em] text-[#8a8a86] md:block"
+          >
+            astro &middot; 2026
+          </span>
+          <span
+            class="justify-self-end text-[20px] text-[#b3b3af] transition-[transform,color] duration-[220ms] group-hover:translate-x-1.5 group-hover:text-[#131313] group-focus-visible:translate-x-1.5 group-focus-visible:text-[#131313]"
+            aria-hidden="true">&rarr;</span
+          >
+        </a>
+      </main>
+
+      <!-- footer -->
+      <footer
+        class="mono mt-auto flex flex-wrap items-baseline justify-between gap-3 pb-8 pt-10 text-[10px] uppercase tracking-[0.16em] text-[#8a8a86]"
+      >
+        <span>hosted on vercel</span>
+        <span>source on github &middot; made to be used</span>
+      </footer>
     </div>
-    
-    <!-- Corner accents -->
-    <div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-yellow-400"></div>
-    <div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-yellow-400"></div>
-    <div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-yellow-400"></div>
-    <div class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-yellow-400"></div>
+
+    <style>
+      .mono {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      }
+      /* underline sweep on rows */
+      .row::after {
+        content: "";
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: -1px;
+        height: 2px;
+        background: #131313;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .row:hover::after,
+      .row:focus-visible::after {
+        transform: scaleX(1);
+      }
+
+      /* walking dot on the hairline */
+      .pulse-car {
+        position: absolute;
+        top: -3.5px;
+        left: 0;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #ff5a36;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .pulse-car {
+          animation: pulse-walk 6s cubic-bezier(0.77, 0, 0.175, 1) infinite
+            alternate;
+        }
+        @keyframes pulse-walk {
+          0% {
+            transform: translateX(0.2vw);
+          }
+          14% {
+            transform: translateX(14vw);
+          }
+          32% {
+            transform: translateX(16vw);
+          }
+          58% {
+            transform: translateX(64vw);
+          }
+          72% {
+            transform: translateX(66vw);
+          }
+          100% {
+            transform: translateX(72vw);
+          }
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .pulse-car {
+          left: 50%;
+        }
+      }
+    </style>
   </div>
 </Layout>
