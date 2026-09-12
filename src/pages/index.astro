@@ -3,9 +3,11 @@ import Layout from "../layouts/main.astro";
 ---
 
 <Layout>
-  <div class="site relative min-h-screen bg-[#fbfbfa] font-sans text-[#131313]">
+  <div
+    class="site relative flex min-h-[100dvh] flex-col overflow-x-clip bg-[#fbfbfa] font-sans text-[#131313]"
+  >
     <div
-      class="mx-auto flex min-h-screen max-w-[1200px] flex-col px-5 md:px-12"
+      class="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-5 md:px-12"
     >
       <!-- top bar -->
       <header
@@ -37,9 +39,11 @@ import Layout from "../layouts/main.astro";
       </header>
 
       <!-- hero -->
-      <section class="pb-6 pt-10 md:pb-10 md:pt-24">
+      <section
+        class="flex flex-1 flex-col justify-center pb-6 pt-10 md:pb-10 md:pt-24"
+      >
         <h1
-          class="m-0 text-[clamp(64px,14cqi,168px)] font-black uppercase leading-[0.88] tracking-[-0.05em]"
+          class="m-0 text-[clamp(84px,26vw,168px)] font-black uppercase leading-[0.88] tracking-[-0.05em] md:text-[clamp(56px,14cqi,168px)]"
         >
           Musse<br />
           <span class="text-[#ff5a36]">Jusse.</span>
