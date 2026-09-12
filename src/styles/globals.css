@@ -13,6 +13,11 @@ html {
   scroll-behavior: smooth;
 }
 
+::selection {
+  color: #131313;
+  background-color: #ff5a36;
+}
+
 body {
   padding: 0;
   margin: 0;
