@@ -57,7 +57,9 @@ import Layout from "../layouts/main.astro";
         class="pulse relative mx-0 my-8 h-[2px] rounded bg-[#e7e7e4]"
         aria-hidden="true"
       >
-        <span class="pulse-car"></span>
+        <span class="pulse-track">
+          <span class="pulse-dot"></span>
+        </span>
       </div>
 
       <!-- project rows -->
@@ -138,8 +140,15 @@ import Layout from "../layouts/main.astro";
         transform: scaleX(1);
       }
 
-      /* walking dot on the hairline */
-      .pulse-car {
+      /* walking dot on the hairline. the track spans the full line, so the
+         dot's walk is a percentage of the line itself and can never end up
+         past the right edge, whatever the viewport is. */
+      .pulse-track {
+        position: absolute;
+        inset: 0;
+        display: block;
+      }
+      .pulse-dot {
         position: absolute;
         top: -3.5px;
         left: 0;
@@ -149,34 +158,34 @@ import Layout from "../layouts/main.astro";
         background: #ff5a36;
       }
       @media (prefers-reduced-motion: no-preference) {
-        .pulse-car {
+        .pulse-track {
           animation: pulse-walk 6s cubic-bezier(0.77, 0, 0.175, 1) infinite
             alternate;
         }
         @keyframes pulse-walk {
           0% {
-            transform: translateX(0.2vw);
+            transform: translateX(0.2%);
           }
           14% {
-            transform: translateX(14vw);
+            transform: translateX(14%);
           }
           32% {
-            transform: translateX(16vw);
+            transform: translateX(16%);
           }
           58% {
-            transform: translateX(64vw);
+            transform: translateX(84%);
           }
           72% {
-            transform: translateX(66vw);
+            transform: translateX(86%);
           }
           100% {
-            transform: translateX(72vw);
+            transform: translateX(calc(100% - 9px));
           }
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .pulse-car {
-          left: 50%;
+        .pulse-track {
+          transform: translateX(50%);
         }
       }
     </style>
