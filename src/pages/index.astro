@@ -3,17 +3,17 @@ import Layout from "../layouts/main.astro";
 ---
 
 <Layout>
-  <div class="h-screen w-full overflow-hidden relative bg-black text-white font-mono">
+  <div class="min-h-screen w-full relative flex flex-col bg-black text-white font-mono">
     
     <!-- Grid overlay -->
     <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
     
     <!-- Diagonal stripe -->
-    <div class="absolute top-0 right-0 w-1/2 h-full bg-yellow-400 transform skew-x-12 translate-x-20 opacity-90"></div>
-    <div class="absolute top-0 right-0 w-32 h-full bg-red-500 transform skew-x-12 translate-x-40"></div>
+    <div class="absolute inset-y-0 right-0 w-1/2 bg-yellow-400 transform skew-x-12 translate-x-20 opacity-90"></div>
+    <div class="absolute inset-y-0 right-0 w-32 bg-red-500 transform skew-x-12 translate-x-40"></div>
     
     <!-- Main content -->
-    <div class="relative z-10 h-full flex flex-col justify-between p-6 md:p-12">
+    <div class="relative z-10 flex-1 flex flex-col justify-between p-6 md:p-12">
       
       <!-- Top section -->
       <div class="flex justify-between items-start">
@@ -49,7 +49,7 @@ import Layout from "../layouts/main.astro";
               <span class="text-xs tracking-widest text-gray-500">FEATURED PROJECT</span>
               <span class="text-yellow-400 text-2xl">-&gt;</span>
             </div>
-            <a href="https://roundest.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
+            <a href="https://cutest.mussejusse.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
               ROUNDEST<br/>POKEMON
             </a>
             <div class="mt-4 text-xs text-gray-600 leading-relaxed">
@@ -67,6 +67,19 @@ import Layout from "../layouts/main.astro";
             </a>
             <div class="mt-4 text-xs text-gray-600 leading-relaxed">
               Astro // Ultra Performant // models.dev implementation
+            </div>
+          </div>
+
+          <div class="bg-white text-black p-6 md:p-8 w-full">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs tracking-widest text-gray-500">PROJECT</span>
+              <span class="text-yellow-400 text-2xl">-&gt;</span>
+            </div>
+            <a href="https://www.byrubydesigns.com" target="_blank" rel="noreferrer" class="block text-2xl md:text-3xl font-black hover:text-yellow-500 transition-colors">
+              BYRUBYDESIGNS
+            </a>
+            <div class="mt-4 text-xs text-gray-600 leading-relaxed">
+              Astro // Static Portfolio // WebP Images
             </div>
           </div>
         </div>
