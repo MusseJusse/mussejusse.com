@@ -56,8 +56,8 @@ const projects = [
         </p>
       </section>
 
-      <div class="cb-track" aria-hidden="true">
-        <span class="cb-runner"><span class="cb-runner-fill"></span></span>
+      <div class="cb-horizon" aria-hidden="true">
+        <span class="cb-horizon-fill"></span>
       </div>
 
       <section class="cb-cols" aria-label="Projects">
@@ -74,9 +74,21 @@ const projects = [
                 <p class="cb-col-desc">{project.description}</p>
                 <span class="cb-col-url">
                   <span>{project.domain}</span>
-                  <span class="cb-arrow" aria-hidden="true">
-                    &#8599;
-                  </span>
+                  <svg
+                    class="cb-arrow"
+                    width="13"
+                    height="13"
+                    viewBox="0 0 13 13"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M3 10L10 3M10 3H4.5M10 3V8.5"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="square"
+                    />
+                  </svg>
                 </span>
               </div>
               <span class="sr-only"> (opens in a new tab)</span>
@@ -91,7 +103,13 @@ const projects = [
     .poster {
       min-height: 100dvh;
       width: 100%;
-      background: var(--cobalt);
+      background:
+        radial-gradient(
+          90% 70% at 12% 0%,
+          rgba(62, 104, 255, 0.22),
+          transparent 62%
+        ),
+        var(--cobalt);
       color: var(--ink);
       display: grid;
       grid-template-rows: auto 1fr;
@@ -100,7 +118,7 @@ const projects = [
 
     /* Top nav bar: first in DOM and first visually across all viewports */
     .cb-topbar {
-      padding: calc(env(safe-area-inset-top) + 14px)
+      padding: calc(env(safe-area-inset-top) + 12px)
         max(24px, env(safe-area-inset-right)) 0
         max(24px, env(safe-area-inset-left));
     }
@@ -160,27 +178,27 @@ const projects = [
       border-radius: 2px;
     }
 
-    /* Main landmark wraps hero, track, and projects */
+    /* Main landmark wraps hero, horizon rule, and projects */
     .cb-main {
       display: grid;
       grid-template-rows: auto auto 1fr;
     }
 
     .cb-hero {
-      padding: 18px max(24px, env(safe-area-inset-right)) 28px
+      padding: 12px max(24px, env(safe-area-inset-right)) 24px
         max(24px, env(safe-area-inset-left));
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      gap: 18px;
+      gap: 16px;
     }
 
     .cb-h1 {
-      font-size: clamp(64px, 16vw, 118px);
+      font-size: clamp(78px, 23vw, 108px);
       font-weight: 700;
-      line-height: 0.88;
-      letter-spacing: -0.045em;
-      margin-left: -0.04em;
+      line-height: 0.86;
+      letter-spacing: -0.048em;
+      margin-left: -0.022em;
       color: var(--ink-bright);
     }
 
@@ -190,33 +208,23 @@ const projects = [
     }
 
     .cb-bio {
-      font-size: clamp(16px, 3.6vw, 20px);
+      font-size: 16px;
       line-height: 1.42;
       color: var(--ink-muted);
-      max-width: 32ch;
+      max-width: 34ch;
+      text-wrap: pretty;
     }
 
-    /* Divider track: full-width marigold line on mobile, active column bar on desktop */
-    .cb-track {
+    /* Unified 3px marigold horizon line across all viewports */
+    .cb-horizon {
       position: relative;
-      height: 4px;
+      height: 3px;
       background: var(--line);
       overflow: hidden;
+      transform: translateZ(0);
     }
 
-    .cb-runner {
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 100%;
-      transform-origin: left;
-      scale: 1 1;
-      translate: 0% 0;
-      transition:
-        translate 280ms cubic-bezier(0.23, 1, 0.32, 1),
-        scale 280ms cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .cb-runner-fill {
+    .cb-horizon-fill {
       display: block;
       width: 100%;
       height: 100%;
@@ -225,11 +233,12 @@ const projects = [
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      .cb-runner-fill {
-        animation: cb-enter 640ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
+      .cb-horizon-fill {
+        animation: cb-horizon-draw 620ms cubic-bezier(0.22, 1, 0.36, 1)
+          backwards;
       }
 
-      @keyframes cb-enter {
+      @keyframes cb-horizon-draw {
         from {
           scale: 0 1;
         }
@@ -253,7 +262,7 @@ const projects = [
       flex-direction: column;
       justify-content: center;
       gap: 10px;
-      padding: 24px max(24px, env(safe-area-inset-right)) 24px
+      padding: 18px max(24px, env(safe-area-inset-right)) 18px
         max(24px, env(safe-area-inset-left));
       border-bottom: 1px solid var(--line);
       background-color: var(--col-bg);
@@ -262,50 +271,69 @@ const projects = [
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Kinetic top seam strip: zips across the active column while colour swaps immediately */
+    .cb-col::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--cobalt-deep);
+      transform-origin: left;
+      scale: 0 1;
+      transition: scale 130ms ease-out;
+      pointer-events: none;
+    }
+
     .cb-col:last-child {
       border-bottom: 0;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 28px);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
     }
 
     .cb-col-title {
-      font-size: clamp(32px, 8.2vw, 44px);
+      font-size: clamp(32px, 8.2vw, 38px);
       font-weight: 700;
       line-height: 0.96;
       letter-spacing: -0.032em;
+      margin-left: -0.03em;
       text-wrap: balance;
     }
 
     .cb-col-meta {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .cb-col-desc {
-      font-size: 15px;
+      font-size: 15.5px;
       line-height: 1.42;
       color: var(--col-muted);
       max-width: 34ch;
+      text-wrap: pretty;
     }
 
     .cb-col-url {
       display: inline-flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
-      gap: 6px;
-      font-size: 14px;
+      gap: 7px;
+      font-size: 14.5px;
       font-weight: 600;
       color: var(--col-accent);
+    }
+
+    .cb-col-url > span {
+      min-width: 0;
       overflow-wrap: anywhere;
     }
 
     .cb-arrow {
       display: inline-block;
-      line-height: 1;
-      transition: translate 200ms cubic-bezier(0.23, 1, 0.32, 1);
+      flex-shrink: 0;
+      transition: translate 180ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* Crisp colour flip (no mid-luminance cross-fade) for pointer hover, active tap, and focus */
+    /* Instant AAA colour flip + kinetic seam strip & arrow nudge (zero low-contrast frames) */
     @media (hover: hover) and (pointer: fine) {
       .cb-col:hover {
         --col-bg: var(--accent);
@@ -314,8 +342,13 @@ const projects = [
         --col-accent: var(--cobalt-deep);
       }
 
+      .cb-col:hover::before {
+        scale: 1 1;
+        transition: scale 200ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
       .cb-col:hover .cb-arrow {
-        translate: 2px -2px;
+        translate: 3px -3px;
       }
 
       .cb-col:hover ::selection {
@@ -331,8 +364,12 @@ const projects = [
       --col-accent: var(--cobalt-deep);
     }
 
+    .cb-col:is(:active, :focus-visible)::before {
+      scale: 1 1;
+    }
+
     .cb-col:is(:active, :focus-visible) .cb-arrow {
-      translate: 2px -2px;
+      translate: 3px -3px;
     }
 
     .cb-col:is(:active, :focus-visible) ::selection {
@@ -345,34 +382,131 @@ const projects = [
       outline-offset: -3px;
     }
 
-    /* Desktop poster spread (>= 860px avoids squeezing 3 columns on narrow tablets) */
-    @media (min-width: 860px) {
+    /* Portrait tablet (600px-859px and portrait tablets up to 1199px): 2-column timetable */
+    @media (min-width: 600px) and (max-width: 859px),
+      (min-width: 860px) and (max-width: 1199px) and (orientation: portrait) {
       .cb-topbar {
-        padding: calc(env(safe-area-inset-top) + clamp(14px, 3vh, 28px))
-          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-right)) 0
-          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-left));
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+        column-gap: 32px;
+        padding: calc(env(safe-area-inset-top) + 22px)
+          max(clamp(28px, 5.5vw, 56px), env(safe-area-inset-right)) 0
+          max(clamp(28px, 5.5vw, 56px), env(safe-area-inset-left));
       }
 
       .cb-nav {
+        grid-column: 2;
+        justify-content: flex-start;
+        margin-inline-start: -4px;
+        margin-inline-end: 0;
+        gap: 24px;
+        font-size: 16px;
+      }
+
+      .cb-main {
+        grid-template-rows: 1fr auto auto;
+      }
+
+      .cb-hero {
+        padding: 28px
+          max(clamp(28px, 5.5vw, 56px), env(safe-area-inset-right)) 40px
+          max(clamp(28px, 5.5vw, 56px), env(safe-area-inset-left));
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+        column-gap: 32px;
+        align-items: last baseline;
+        align-content: end;
+      }
+
+      .cb-h1 {
+        font-size: clamp(86px, 13.5vw, 132px);
+        line-height: 0.88;
+      }
+
+      .cb-bio {
+        font-size: clamp(18px, 2.2vw, 21px);
+        max-width: 28ch;
+      }
+
+      .cb-col {
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+        align-items: first baseline;
+        column-gap: 32px;
+        padding: clamp(32px, 4vh, 44px)
+          max(clamp(28px, 5.5vw, 56px), env(safe-area-inset-right))
+          clamp(32px, 4vh, 44px)
+          max(clamp(28px, 5.5vw, 56px), env(safe-area-inset-left));
+      }
+
+      .cb-col:last-child {
+        padding-bottom: calc(
+          env(safe-area-inset-bottom) + clamp(36px, 4.5vh, 52px)
+        );
+      }
+
+      .cb-col-title {
+        font-size: clamp(36px, 5.2vw, 48px);
+      }
+
+      .cb-col-meta {
+        gap: 10px;
+      }
+
+      .cb-col-desc {
+        font-size: clamp(16.5px, 2vw, 19px);
+      }
+
+      .cb-col-url {
+        font-size: clamp(15.5px, 1.8vw, 17px);
+      }
+    }
+
+    /* Desktop poster spread: sky holds vertical breathing room, columns stay taut */
+    @media (min-width: 860px) and (orientation: landscape),
+      (min-width: 1200px) {
+      .cb-topbar {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: calc(env(safe-area-inset-top) + clamp(14px, 3vh, 28px)) 0 0;
+      }
+
+      .cb-nav {
+        grid-column: 3;
+        justify-content: flex-start;
         gap: 28px;
+        margin-inline-end: 0;
+        padding-left: clamp(24px, 3.6vw, 52px);
+        padding-right: max(
+          clamp(32px, 4.8vw, 68px),
+          env(safe-area-inset-right)
+        );
+        margin-inline-start: -4px;
         font-size: clamp(15px, 1.25vw, 18px);
       }
 
       .cb-main {
-        grid-template-rows: minmax(200px, 0.84fr) auto minmax(260px, 1.16fr);
+        grid-template-rows: minmax(170px, 1fr) auto auto;
       }
 
       .cb-hero {
-        padding: clamp(12px, 2.2vh, 20px)
-          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-right))
-          clamp(20px, 4.2vh, 44px)
-          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-left));
-        gap: clamp(14px, 3vh, 34px);
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: last baseline;
+        align-content: end;
+        padding: clamp(16px, 3vh, 32px) 0 clamp(24px, 4.6vh, 48px);
+        gap: 0;
       }
 
       .cb-h1 {
-        font-size: clamp(60px, min(12.2vw, 20.5vh), 192px);
-        line-height: 0.92;
+        grid-column: 1 / 3;
+        padding-left: max(
+          clamp(32px, 4.8vw, 68px),
+          env(safe-area-inset-left)
+        );
+        padding-right: 24px;
+        font-size: clamp(64px, min(10.6vw, 20vh), 180px);
+        line-height: 0.9;
         letter-spacing: -0.048em;
       }
 
@@ -382,14 +516,14 @@ const projects = [
       }
 
       .cb-bio {
-        font-size: clamp(17px, 1.55vw, 23px);
-        max-width: 48ch;
-      }
-
-      /* Neutral resting accent that expands and glides cleanly under active column */
-      .cb-runner {
-        width: calc(100% / 3);
-        scale: 0.28 1;
+        grid-column: 3;
+        padding-left: clamp(24px, 3.6vw, 52px);
+        padding-right: max(
+          clamp(32px, 4.8vw, 68px),
+          env(safe-area-inset-right)
+        );
+        font-size: clamp(16px, 1.4vw, 21px);
+        max-width: 30ch;
       }
 
       .cb-cols {
@@ -398,9 +532,9 @@ const projects = [
 
       .cb-col {
         justify-content: space-between;
-        gap: clamp(20px, 3.2vh, 28px);
-        padding: clamp(22px, 4.6vh, 48px) clamp(24px, 3.6vw, 52px)
-          calc(env(safe-area-inset-bottom) + clamp(22px, 4.8vh, 52px));
+        gap: clamp(32px, 6.2vh, 68px);
+        padding: clamp(24px, 4.2vh, 44px) clamp(24px, 3.6vw, 52px)
+          calc(env(safe-area-inset-bottom) + clamp(24px, 4.6vh, 48px));
         border-bottom: 0;
         border-right: 1px solid var(--line);
       }
@@ -419,66 +553,27 @@ const projects = [
           env(safe-area-inset-right)
         );
         padding-bottom: calc(
-          env(safe-area-inset-bottom) + clamp(22px, 4.8vh, 52px)
+          env(safe-area-inset-bottom) + clamp(24px, 4.6vh, 48px)
         );
       }
 
       .cb-col-title {
-        font-size: clamp(34px, 4.1vw, 60px);
+        font-size: clamp(34px, 4vw, 58px);
         line-height: 0.94;
       }
 
+      .cb-col-meta {
+        gap: 10px;
+      }
+
       .cb-col-desc {
-        font-size: clamp(15px, 1.32vw, 19px);
+        font-size: clamp(15px, 1.3vw, 19px);
         line-height: 1.44;
-        max-width: 30ch;
+        max-width: 34ch;
       }
 
       .cb-col-url {
         font-size: clamp(14px, 1.18vw, 17px);
-      }
-    }
-
-    /* Pointer hover sync for runner (gated to fine pointers so touch tablets stay clean) */
-    @media (min-width: 860px) and (hover: hover) and (pointer: fine) {
-      .cb-main:has(.cb-col:nth-child(1):hover) .cb-runner {
-        scale: 1 1;
-        translate: 0% 0;
-      }
-
-      .cb-main:has(.cb-col:nth-child(2):hover) .cb-runner {
-        scale: 1 1;
-        translate: 100% 0;
-      }
-
-      .cb-main:has(.cb-col:nth-child(3):hover) .cb-runner {
-        scale: 1 1;
-        translate: 200% 0;
-      }
-    }
-
-    /* Keyboard focus takes explicit precedence over stray pointer hover */
-    @media (min-width: 860px) {
-      .cb-main:has(.cb-col:nth-child(1):focus-visible) .cb-runner {
-        scale: 1 1;
-        translate: 0% 0;
-      }
-
-      .cb-main:has(.cb-col:nth-child(2):focus-visible) .cb-runner {
-        scale: 1 1;
-        translate: 100% 0;
-      }
-
-      .cb-main:has(.cb-col:nth-child(3):focus-visible) .cb-runner {
-        scale: 1 1;
-        translate: 200% 0;
-      }
-    }
-
-    /* Short desktop and landscape viewports: let rows size to content without jumping scale */
-    @media (min-width: 860px) and (max-height: 680px) {
-      .cb-main {
-        grid-template-rows: auto auto 1fr;
       }
     }
   </style>
