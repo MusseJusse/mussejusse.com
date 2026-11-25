@@ -1,205 +1,485 @@
 ---
 import Layout from "../layouts/main.astro";
+
+const projects = [
+  {
+    name: "Atlas",
+    description: "Compare AI model intelligence, cost, and speed.",
+    domain: "atlas.mussejusse.com",
+    href: "https://atlas.mussejusse.com",
+  },
+  {
+    name: "By Ruby Designs",
+    description: "Tattoo, painting, and drawing work in Edinburgh.",
+    domain: "byrubydesigns.com",
+    href: "https://byrubydesigns.com",
+  },
+  {
+    name: "Cutest Pokémon",
+    description: "Head-to-head voting and live favourites ranking.",
+    domain: "cutest.mussejusse.com",
+    href: "https://cutest.mussejusse.com",
+  },
+];
 ---
 
 <Layout>
-  <div
-    class="site relative flex min-h-[100dvh] flex-col overflow-x-clip bg-[#fbfbfa] font-sans text-[#131313]"
-  >
-    <div
-      class="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-5 md:px-12"
-    >
-      <!-- hero -->
-      <section
-        class="flex flex-1 flex-col justify-center pb-6 pt-10 md:pb-10 md:pt-24"
-      >
-        <h1
-          class="m-0 text-[clamp(84px,26vw,168px)] font-black uppercase leading-[0.88] tracking-[-0.05em] md:text-[clamp(56px,14cqi,168px)]"
+  <div class="poster">
+    <header class="cb-topbar">
+      <nav class="cb-nav" aria-label="Elsewhere">
+        <a
+          href="https://github.com/MusseJusse"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <h1
-            class="m-0 text-[clamp(84px,26vw,168px)] font-black uppercase leading-[0.88] tracking-[-0.05em] md:text-[clamp(56px,14cqi,168px)]"
+          GitHub<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a
+          href="https://bsky.app/profile/mussejusse.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Bluesky<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      </nav>
+    </header>
+
+    <main class="cb-main">
+      <section class="cb-hero" aria-labelledby="site-title">
+        <h1 class="cb-h1" id="site-title">
+          <span class="cb-first">Musse</span>{" "}<span class="cb-last"
+            >Jusse</span
           >
-            Musse<br />
-            <span class="text-[#ff5a36]">Jusse.</span>
-          </h1>
-          <p
-            class="mono mt-6 max-w-[46ch] text-[12px] leading-relaxed text-[#6b6b67] md:text-[13px]"
-          >
-            I like building things. Here are a few of my projects.
-          </p>
         </h1>
-
-        <!-- activity line: one orange dot walks the hairline -->
-        <div
-          class="pulse relative mx-0 my-8 h-[2px] rounded bg-[#e7e7e4]"
-          aria-hidden="true"
-        >
-          <span class="pulse-track">
-            <span class="pulse-dot"></span>
-          </span>
-        </div>
-
-        <!-- project rows -->
-        <main class="pb-2">
-          <a
-            href="https://cutest.mussejusse.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="row group relative -mt-px grid grid-cols-[1fr_auto] items-center gap-x-5 gap-y-1 border-b border-t border-[#e7e7e4] px-4 py-6 no-underline transition-colors duration-[180ms] hover:bg-white focus-visible:bg-white focus-visible:outline-none md:grid-cols-[1fr_auto_auto] md:py-8"
-          >
-            <span
-              class="text-[clamp(26px,4.8cqi,44px)] font-extrabold leading-none tracking-[-0.035em] text-[#131313]"
-            >
-              Cutest Pok&eacute;mon
-            </span>
-            <span
-              class="mono hidden text-[10px] tracking-[0.1em] text-[#8a8a86] md:block"
-            >
-              next.js 16 &middot; 2026
-            </span>
-            <span
-              class="justify-self-end text-[20px] text-[#b3b3af] transition-[transform,color] duration-[220ms] group-hover:translate-x-1.5 group-hover:text-[#131313] group-focus-visible:translate-x-1.5 group-focus-visible:text-[#131313]"
-              aria-hidden="true">&rarr;</span
-            >
-          </a>
-
-          <a
-            href="https://atlas.mussejusse.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="row group relative -mt-px grid grid-cols-[1fr_auto] items-center gap-x-5 gap-y-1 border-y border-[#e7e7e4] px-4 py-6 no-underline transition-colors duration-[180ms] hover:bg-white focus-visible:bg-white focus-visible:outline-none md:grid-cols-[1fr_auto_auto] md:py-8"
-          >
-            <span
-              class="text-[clamp(26px,4.8cqi,44px)] font-extrabold leading-none tracking-[-0.035em] text-[#131313]"
-            >
-              Model Atlas
-            </span>
-            <span
-              class="mono hidden text-[10px] tracking-[0.1em] text-[#8a8a86] md:block"
-            >
-              react 19 &middot; 2026
-            </span>
-            <span
-              class="justify-self-end text-[20px] text-[#b3b3af] transition-[transform,color] duration-[220ms] group-hover:translate-x-1.5 group-hover:text-[#131313] group-focus-visible:translate-x-1.5 group-focus-visible:text-[#131313]"
-              aria-hidden="true">&rarr;</span
-            >
-          </a>
-
-          <a
-            href="https://byrubydesigns.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="row group relative -mt-px grid grid-cols-[1fr_auto] items-center gap-x-5 gap-y-1 border-y border-[#e7e7e4] px-4 py-6 no-underline transition-colors duration-[180ms] hover:bg-white focus-visible:bg-white focus-visible:outline-none md:grid-cols-[1fr_auto_auto] md:py-8"
-          >
-            <span
-              class="text-[clamp(26px,4.8cqi,44px)] font-extrabold leading-none tracking-[-0.035em] text-[#131313]"
-            >
-              By Ruby Designs
-            </span>
-            <span
-              class="mono hidden text-[10px] tracking-[0.1em] text-[#8a8a86] md:block"
-            >
-              astro &middot; 2026
-            </span>
-            <span
-              class="justify-self-end text-[20px] text-[#b3b3af] transition-[transform,color] duration-[220ms] group-hover:translate-x-1.5 group-hover:text-[#131313] group-focus-visible:translate-x-1.5 group-focus-visible:text-[#131313]"
-              aria-hidden="true">&rarr;</span
-            >
-          </a>
-        </main>
-
-        <!-- footer -->
-        <footer
-          class="mono mt-auto flex flex-wrap items-baseline justify-between gap-3 pb-10 pt-8 text-[11px] uppercase tracking-[0.14em]"
-        >
-          <a
-            href="https://github.com/MusseJusse"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-[#131313] no-underline transition-colors duration-150 hover:text-[#ff5a36]"
-            >GitHub &nearr;</a
-          >
-          <a
-            href="https://bsky.app/profile/mussejusse.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-[#131313] no-underline transition-colors duration-150 hover:text-[#ff5a36]"
-            >Bluesky &nearr;</a
-          >
-        </footer>
+        <p class="cb-bio">
+          I like building things. Here are a few of my projects.
+        </p>
       </section>
 
-      <style>
-        .mono {
-          font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-        }
-        /* underline sweep on rows */
-        .row::after {
-          content: "";
-          position: absolute;
-          left: 16px;
-          right: 16px;
-          bottom: -1px;
-          height: 2px;
-          background: #131313;
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .row:hover::after,
-        .row:focus-visible::after {
-          transform: scaleX(1);
-        }
+      <div class="cb-track" aria-hidden="true">
+        <span class="cb-runner"><span class="cb-runner-fill"></span></span>
+      </div>
 
-        /* walking dot on the hairline. the track spans the full line, so the
-         dot's walk is a percentage of the line itself and can never end up
-         past the right edge, whatever the viewport is. */
-        .pulse-track {
-          position: absolute;
-          inset: 0;
-          display: block;
+      <section class="cb-cols" aria-label="Projects">
+        {
+          projects.map((project) => (
+            <a
+              class="cb-col"
+              href={project.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <h2 class="cb-col-title">{project.name}</h2>
+              <div class="cb-col-meta">
+                <p class="cb-col-desc">{project.description}</p>
+                <span class="cb-col-url">
+                  <span>{project.domain}</span>
+                  <span class="cb-arrow" aria-hidden="true">
+                    &#8599;
+                  </span>
+                </span>
+              </div>
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          ))
         }
-        .pulse-dot {
-          position: absolute;
-          top: -3.5px;
-          left: 0;
-          width: 9px;
-          height: 9px;
-          border-radius: 50%;
-          background: #ff5a36;
-        }
-        @media (prefers-reduced-motion: no-preference) {
-          .pulse-track {
-            animation: pulse-walk 6s cubic-bezier(0.77, 0, 0.175, 1) infinite
-              alternate;
-          }
-          @keyframes pulse-walk {
-            0% {
-              transform: translateX(0.2%);
-            }
-            14% {
-              transform: translateX(14%);
-            }
-            32% {
-              transform: translateX(16%);
-            }
-            58% {
-              transform: translateX(84%);
-            }
-            72% {
-              transform: translateX(86%);
-            }
-            100% {
-              transform: translateX(calc(100% - 9px));
-            }
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .pulse-track {
-            transform: translateX(50%);
-          }
-        }
-      </style>
-    </div>
+      </section>
+    </main>
   </div>
+
+  <style>
+    .poster {
+      min-height: 100dvh;
+      width: 100%;
+      background: var(--cobalt);
+      color: var(--ink);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow-x: clip;
+    }
+
+    /* Top nav bar: first in DOM and first visually across all viewports */
+    .cb-topbar {
+      padding: calc(env(safe-area-inset-top) + 14px)
+        max(24px, env(safe-area-inset-right)) 0
+        max(24px, env(safe-area-inset-left));
+    }
+
+    .cb-nav {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 20px;
+      margin-inline-end: -4px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .cb-nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 4px;
+      color: var(--ink);
+      text-decoration: none;
+      position: relative;
+      transition: color 150ms ease;
+    }
+
+    .cb-nav a::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      bottom: 8px;
+      height: 2px;
+      background: var(--accent);
+      scale: 0 1;
+      transform-origin: left;
+      transition: scale 180ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .cb-nav a:hover {
+        color: var(--accent);
+      }
+
+      .cb-nav a:hover::after {
+        scale: 1 1;
+      }
+    }
+
+    .cb-nav a:active {
+      color: var(--accent);
+    }
+
+    .cb-nav a:focus-visible {
+      color: var(--accent);
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Main landmark wraps hero, track, and projects */
+    .cb-main {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .cb-hero {
+      padding: 18px max(24px, env(safe-area-inset-right)) 28px
+        max(24px, env(safe-area-inset-left));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 18px;
+    }
+
+    .cb-h1 {
+      font-size: clamp(64px, 16vw, 118px);
+      font-weight: 700;
+      line-height: 0.88;
+      letter-spacing: -0.045em;
+      margin-left: -0.04em;
+      color: var(--ink-bright);
+    }
+
+    .cb-first,
+    .cb-last {
+      display: block;
+    }
+
+    .cb-bio {
+      font-size: clamp(16px, 3.6vw, 20px);
+      line-height: 1.42;
+      color: var(--ink-muted);
+      max-width: 32ch;
+    }
+
+    /* Divider track: full-width marigold line on mobile, active column bar on desktop */
+    .cb-track {
+      position: relative;
+      height: 4px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .cb-runner {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 100%;
+      transform-origin: left;
+      scale: 1 1;
+      translate: 0% 0;
+      transition:
+        translate 280ms cubic-bezier(0.23, 1, 0.32, 1),
+        scale 280ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .cb-runner-fill {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      transform-origin: left;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .cb-runner-fill {
+        animation: cb-enter 640ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
+      }
+
+      @keyframes cb-enter {
+        from {
+          scale: 0 1;
+        }
+      }
+    }
+
+    /* Project stack and columns */
+    .cb-cols {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .cb-col {
+      --col-bg: transparent;
+      --col-fg: var(--ink);
+      --col-muted: var(--ink-muted);
+      --col-accent: var(--accent);
+
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px max(24px, env(safe-area-inset-right)) 24px
+        max(24px, env(safe-area-inset-left));
+      border-bottom: 1px solid var(--line);
+      background-color: var(--col-bg);
+      color: var(--col-fg);
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .cb-col:last-child {
+      border-bottom: 0;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 28px);
+    }
+
+    .cb-col-title {
+      font-size: clamp(32px, 8.2vw, 44px);
+      font-weight: 700;
+      line-height: 0.96;
+      letter-spacing: -0.032em;
+      text-wrap: balance;
+    }
+
+    .cb-col-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cb-col-desc {
+      font-size: 15px;
+      line-height: 1.42;
+      color: var(--col-muted);
+      max-width: 34ch;
+    }
+
+    .cb-col-url {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--col-accent);
+      overflow-wrap: anywhere;
+    }
+
+    .cb-arrow {
+      display: inline-block;
+      line-height: 1;
+      transition: translate 200ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* Crisp colour flip (no mid-luminance cross-fade) for pointer hover, active tap, and focus */
+    @media (hover: hover) and (pointer: fine) {
+      .cb-col:hover {
+        --col-bg: var(--accent);
+        --col-fg: var(--cobalt-deep);
+        --col-muted: var(--cobalt-muted);
+        --col-accent: var(--cobalt-deep);
+      }
+
+      .cb-col:hover .cb-arrow {
+        translate: 2px -2px;
+      }
+
+      .cb-col:hover ::selection {
+        background-color: var(--cobalt-deep);
+        color: var(--accent);
+      }
+    }
+
+    .cb-col:is(:active, :focus-visible) {
+      --col-bg: var(--accent);
+      --col-fg: var(--cobalt-deep);
+      --col-muted: var(--cobalt-muted);
+      --col-accent: var(--cobalt-deep);
+    }
+
+    .cb-col:is(:active, :focus-visible) .cb-arrow {
+      translate: 2px -2px;
+    }
+
+    .cb-col:is(:active, :focus-visible) ::selection {
+      background-color: var(--cobalt-deep);
+      color: var(--accent);
+    }
+
+    .cb-col:focus-visible {
+      outline: 3px solid var(--cobalt-deep);
+      outline-offset: -3px;
+    }
+
+    /* Desktop poster spread (>= 860px avoids squeezing 3 columns on narrow tablets) */
+    @media (min-width: 860px) {
+      .cb-topbar {
+        padding: calc(env(safe-area-inset-top) + clamp(14px, 3vh, 28px))
+          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-right)) 0
+          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-left));
+      }
+
+      .cb-nav {
+        gap: 28px;
+        font-size: clamp(15px, 1.25vw, 18px);
+      }
+
+      .cb-main {
+        grid-template-rows: minmax(200px, 0.84fr) auto minmax(260px, 1.16fr);
+      }
+
+      .cb-hero {
+        padding: clamp(12px, 2.2vh, 20px)
+          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-right))
+          clamp(20px, 4.2vh, 44px)
+          max(clamp(32px, 4.8vw, 68px), env(safe-area-inset-left));
+        gap: clamp(14px, 3vh, 34px);
+      }
+
+      .cb-h1 {
+        font-size: clamp(60px, min(12.2vw, 20.5vh), 192px);
+        line-height: 0.92;
+        letter-spacing: -0.048em;
+      }
+
+      .cb-first,
+      .cb-last {
+        display: inline;
+      }
+
+      .cb-bio {
+        font-size: clamp(17px, 1.55vw, 23px);
+        max-width: 48ch;
+      }
+
+      /* Neutral resting accent that expands and glides cleanly under active column */
+      .cb-runner {
+        width: calc(100% / 3);
+        scale: 0.28 1;
+      }
+
+      .cb-cols {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cb-col {
+        justify-content: space-between;
+        gap: clamp(20px, 3.2vh, 28px);
+        padding: clamp(22px, 4.6vh, 48px) clamp(24px, 3.6vw, 52px)
+          calc(env(safe-area-inset-bottom) + clamp(22px, 4.8vh, 52px));
+        border-bottom: 0;
+        border-right: 1px solid var(--line);
+      }
+
+      .cb-col:first-child {
+        padding-left: max(
+          clamp(32px, 4.8vw, 68px),
+          env(safe-area-inset-left)
+        );
+      }
+
+      .cb-col:last-child {
+        border-right: 0;
+        padding-right: max(
+          clamp(32px, 4.8vw, 68px),
+          env(safe-area-inset-right)
+        );
+        padding-bottom: calc(
+          env(safe-area-inset-bottom) + clamp(22px, 4.8vh, 52px)
+        );
+      }
+
+      .cb-col-title {
+        font-size: clamp(34px, 4.1vw, 60px);
+        line-height: 0.94;
+      }
+
+      .cb-col-desc {
+        font-size: clamp(15px, 1.32vw, 19px);
+        line-height: 1.44;
+        max-width: 30ch;
+      }
+
+      .cb-col-url {
+        font-size: clamp(14px, 1.18vw, 17px);
+      }
+    }
+
+    /* Pointer hover sync for runner (gated to fine pointers so touch tablets stay clean) */
+    @media (min-width: 860px) and (hover: hover) and (pointer: fine) {
+      .cb-main:has(.cb-col:nth-child(1):hover) .cb-runner {
+        scale: 1 1;
+        translate: 0% 0;
+      }
+
+      .cb-main:has(.cb-col:nth-child(2):hover) .cb-runner {
+        scale: 1 1;
+        translate: 100% 0;
+      }
+
+      .cb-main:has(.cb-col:nth-child(3):hover) .cb-runner {
+        scale: 1 1;
+        translate: 200% 0;
+      }
+    }
+
+    /* Keyboard focus takes explicit precedence over stray pointer hover */
+    @media (min-width: 860px) {
+      .cb-main:has(.cb-col:nth-child(1):focus-visible) .cb-runner {
+        scale: 1 1;
+        translate: 0% 0;
+      }
+
+      .cb-main:has(.cb-col:nth-child(2):focus-visible) .cb-runner {
+        scale: 1 1;
+        translate: 100% 0;
+      }
+
+      .cb-main:has(.cb-col:nth-child(3):focus-visible) .cb-runner {
+        scale: 1 1;
+        translate: 200% 0;
+      }
+    }
+
+    /* Short desktop and landscape viewports: let rows size to content without jumping scale */
+    @media (min-width: 860px) and (max-height: 680px) {
+      .cb-main {
+        grid-template-rows: auto auto 1fr;
+      }
+    }
+  </style>
 </Layout>
