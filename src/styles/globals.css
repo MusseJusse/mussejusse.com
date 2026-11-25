@@ -3,61 +3,51 @@
 @tailwind components;
 @tailwind utilities;
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@font-face {
+  font-family: "Familjen Grotesk Fallback";
+  src: local("Helvetica Neue"), local("Arial");
+  size-adjust: 92%;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --cobalt: #1734b8;
+  --cobalt-deep: #102482;
+  --cobalt-muted: rgba(16, 36, 130, 0.88);
+  --ink: #f7f8fc;
+  --ink-bright: #ffffff;
+  --ink-muted: rgba(247, 248, 252, 0.88);
+  --line: rgba(247, 248, 252, 0.26);
+  --accent: #ffd447;
 }
 
 html {
-  scroll-behavior: smooth;
+  background-color: var(--cobalt);
 }
 
 ::selection {
-  color: #131313;
-  background-color: #ff5a36;
+  color: var(--cobalt-deep);
+  background-color: var(--accent);
 }
 
 body {
-  padding: 0;
-  margin: 0;
+  min-height: 100dvh;
   font-family:
+    "Familjen Grotesk",
+    "Familjen Grotesk Fallback",
     -apple-system,
     BlinkMacSystemFont,
-    Segoe UI,
+    "Segoe UI",
     Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
+    Helvetica,
+    Arial,
     sans-serif;
-  scroll-behavior: smooth;
-}
-
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-li,
-figure,
-figcaption,
-blockquote,
-dl,
-dd {
-  margin: 0;
-}
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-a {
-  color: inherit;
+  background-color: var(--cobalt);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -71,26 +61,4 @@ a {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-@supports (-webkit-touch-callout: none) {
-  body {
-    /* The hack for Safari */
-    height: -webkit-fill-available;
-  }
-}
-
-/* Avoid overlapping new iOS 15 Safari bottom bar */
-
-.tabbar {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom);
-}
-
-.link-light {
-  @apply text-blue-800 no-underline hover:text-blue-600 hover:underline;
-}
-
-.link-dark {
-  @apply text-blue-300 no-underline hover:text-blue-500 hover:underline;
 }
